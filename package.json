@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "retro-free-cell",
   "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
+  "description": "復古風新接龍",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "EasonChiang7178 <ishiu.chiang@gmail.com>",
   "dependencies": {
     "babel-plugin-styled-components": "^1.10.6",
     "gatsby": "^2.13.39",
@@ -34,14 +34,13 @@
     "develop": "gatsby develop",
     "format": "prettier --write src/**/*.{js,jsx}",
     "start": "npm run develop",
-    "serve": "gatsby serve",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
+    "serve": "gatsby serve"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+    "url": "https://github.com/easonchiang7178/f2e-freecell"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/easonchiang7178/f2e-freecell/issues"
   }
 }
