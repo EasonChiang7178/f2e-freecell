@@ -173,5 +173,17 @@ export const query = graphql`
     spade_k: file(relativePath: { eq: "cards/spade_k.png" }) {
       childImageSharp { fixed(width: 200) { ...GatsbyImageSharpFixed } }
     }
+    club_watermark: file(relativePath: { eq: "img_watermark_club.png" }) {
+      childImageSharp { fixed(width: 120) { ...GatsbyImageSharpFixed } }
+    }
+    diamond_watermark: file(relativePath: { eq: "img_watermark_diamond.png" }) {
+      childImageSharp { fixed(width: 120) { ...GatsbyImageSharpFixed } }
+    }
+    heart_watermark: file(relativePath: { eq: "img_watermark_heart.png" }) {
+      childImageSharp { fixed(width: 120) { ...GatsbyImageSharpFixed } }
+    }
+    spade_watermark: file(relativePath: { eq: "img_watermark_spade.png" }) {
+      childImageSharp { fixed(width: 120) { ...GatsbyImageSharpFixed } }
+    }
   }
 `
