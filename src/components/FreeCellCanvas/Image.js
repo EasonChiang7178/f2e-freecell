@@ -6,6 +6,8 @@ import "konva/lib/shapes/Image"
 
 class CanvasImage extends React.PureComponent {
   static propTypes = {
+    x: PropTypes.number,
+    y: PropTypes.number,
     base64: PropTypes.string,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
@@ -15,6 +17,8 @@ class CanvasImage extends React.PureComponent {
   }
 
   static defaultProps = {
+    x: 0,
+    y: 0,
     draggable: false
   }
 
