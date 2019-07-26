@@ -15,7 +15,7 @@ class CanvasImage extends React.PureComponent {
   }
 
   static defaultProps = {
-    draggable: true
+    draggable: false
   }
 
   state = {
