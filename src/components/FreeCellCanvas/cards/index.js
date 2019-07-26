@@ -8,8 +8,8 @@ class Card extends React.PureComponent {
     return (
       <Image
         base64={base64}
-        width={width}
-        height={height}
+        width={width / 2} // [NOTE] hotfix, for retina resolution support
+        height={height / 2}
         src={src}
         srcSet={srcSet}
       />

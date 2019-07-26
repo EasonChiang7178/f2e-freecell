@@ -57,7 +57,7 @@ class CanvasImage extends React.PureComponent {
   loadImage() {
     this.image = new window.Image()
     this.image.src = this.props.src
-    this.image.srcSet = this.props.srcSet
+    this.image.srcSet = this.props.srcSet // [NOTE] not working, maybe canvas image not support srcSet?
     this.image.addEventListener('load', this.handleLoad)
   }
 
