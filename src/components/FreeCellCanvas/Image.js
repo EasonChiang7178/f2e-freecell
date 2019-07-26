@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import Konva from "konva"
 
 import { Image } from 'react-konva/lib/ReactKonvaCore'
 import "konva/lib/shapes/Image"
@@ -80,21 +81,54 @@ class CanvasImage extends React.PureComponent {
     document.body.style.cursor = 'default'
   }
 
-  render = () => (
-    <Image
-      x={this.props.x}
-      y={this.props.y}
-      width={this.props.width}
-      height={this.props.height}
-      image={this.state.image}
-      draggable={this.props.draggable}
-      ref={node => {
-        this.imageNode = node
-      }}
-      onMouseOver={this.handleMoveOver}
-      onMouseOut={this.handleMoveOut}
-    />
-  )
+  handleDragStart = (e) => {
+    e.target.setAttrs({
+      shadowBlur: 10,
+      shadowOpacity: .6,
+      shadowOffset: {
+        x: 2,
+        y: 2
+      },
+      scaleX: 1.05,
+      scaleY: 1.05
+    })
+  }
+
+  handleDragEnd = (e) => {
+    e.target.to({
+      duration: 0.5,
+      easing: Konva.Easings.ElasticEaseOut,
+      scaleX: 1,
+      scaleY: 1,
+      shadowOffsetX: 0,
+      shadowOffsetY: 0,
+      shadowBlur: 0
+    })
+  }
+
+  render = () => {
+    const { x, y, width, height, draggable } = this.props
+
+    return (
+      <Image
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        image={this.state.image}
+        draggable={draggable}
+        ref={node => {
+          this.imageNode = node
+        }}
+        {...(draggable && {
+          onMouseOver: this.handleMoveOver,
+          onMouseOut: this.handleMoveOut,
+          onDragStart: this.handleDragStart,
+          onDragEnd: this.handleDragEnd
+        })}
+      />
+    )
+  }
 }
 
 export default CanvasImage

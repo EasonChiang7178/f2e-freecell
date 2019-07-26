@@ -8,16 +8,18 @@ class Card extends React.PureComponent {
   static propTypes = {
     id: PropTypes.string.isRequired,
     x: PropTypes.number,
-    y: PropTypes.number
+    y: PropTypes.number,
+    draggable: PropTypes.bool
   }
 
   static defaultProps = {
     x: 0,
-    y: 0
+    y: 0,
+    draggable: false
   }
 
   render = () => {
-    const { x, y } = this.props
+    const { x, y, draggable } = this.props
     const { base64, width, height, src, srcSet } = this.props.imageData.childImageSharp.fixed
     
     return (
@@ -29,6 +31,7 @@ class Card extends React.PureComponent {
         height={height / 2}
         src={src}
         srcSet={srcSet}
+        draggable={draggable}
       />
     )
   }

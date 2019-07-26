@@ -17,8 +17,12 @@ class StackedDeck extends React.PureComponent {
     cards: []
   }
 
+  isDraggable = (i) => {
+    return i === this.props.cards.length - 1
+  }
+
   renderCards = () => this.props.cards.map((card, i) => (
-    <Card id={card.id} key={card.id} x={0} y={32 * i} />
+    <Card id={card.id} key={card.id} x={0} y={32 * i} draggable={this.isDraggable(i)} />
   ))
 
   render = () => {
