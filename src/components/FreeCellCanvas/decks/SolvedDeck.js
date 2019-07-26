@@ -3,23 +3,21 @@ import PropTypes from "prop-types"
 import { Group } from 'react-konva/lib/ReactKonvaCore'
 
 import EmptyWaterMarkCell from "../cells/EmptyWaterMarkCell"
-import Card from "../cells/cards"
+import Card from "../cells/Card"
 
 class SolvedDeck extends React.PureComponent {
   static propTypes = {
     spadeSolvedCards: PropTypes.array,
     heartSolvedCards: PropTypes.array,
     diamondSolvedCards: PropTypes.array,
-    clubSolvedCards: PropTypes.array,
-    imageData: PropTypes.object
+    clubSolvedCards: PropTypes.array
   }
 
   static defaultProps = {
     spadeSolvedCards: [],
     heartSolvedCards: [],
     diamondSolvedCards: [],
-    clubSolvedCards: [],
-    imageData: {}
+    clubSolvedCards: []
   }
 
   renderSolvedSpadeDeck = () => this.renderDeck(0, "spade")
@@ -28,13 +26,12 @@ class SolvedDeck extends React.PureComponent {
   renderSolvedClubDeck = () => this.renderDeck(3, "club")
 
   renderDeck = (i, category) => {
-    const waterMarkData = this.props.imageData[`${category}_watermark`]
     const solvedCards = this.props[`${category}SolvedCards`]
     const topCard = solvedCards.length > 0 ? solvedCards[solvedCards.length - 1] : null
-
+    
     return (
       <Group x={(100 + 16) * i} y={0}>
-        <EmptyWaterMarkCell waterMarkData={waterMarkData} />
+        <EmptyWaterMarkCell category={category} />
         {topCard && <Card key={topCard.id} imageData={topCard.imageData} />}
       </Group>
     )

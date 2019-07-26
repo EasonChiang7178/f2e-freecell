@@ -2,6 +2,8 @@ import React from "react"
 import PropTypes from "prop-types"
 import { Group } from 'react-konva/lib/ReactKonvaCore'
 
+import ImageDataConsumer from "../../../contexts/ImageDataContext"
+
 import EmptyCell from './EmptyCell'
 import Image from '../Image'
 
@@ -9,6 +11,7 @@ class EmptyWaterMarkCell extends React.PureComponent {
   static propTypes = {
     x: PropTypes.number,
     y: PropTypes.number,
+    category: PropTypes.string.isRequired,
     waterMarkData: PropTypes.object
   }
 
@@ -37,4 +40,9 @@ class EmptyWaterMarkCell extends React.PureComponent {
   }
 }
 
-export default EmptyWaterMarkCell
+
+export default (props) => (
+  <ImageDataConsumer>
+    {(imageData) => <EmptyWaterMarkCell waterMarkData={imageData[`${props.category}_watermark`]} {...props} />}
+  </ImageDataConsumer>
+)

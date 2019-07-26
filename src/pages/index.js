@@ -1,18 +1,18 @@
 import React from "react"
 
+import { ImageDataProvider } from '../contexts/ImageDataContext'
+
 import SEO from "../layouts/SEO"
 import GlobalStyles from "../layouts/GlobalStyles"
 import FreeCellBoard from "../components/FreeCellBoard"
 
 export default ({ data }) => (
-  <>
+  <ImageDataProvider imageData={data}>
     <SEO title="Retro Free Cell" />
     <GlobalStyles />
 
-    <FreeCellBoard
-      cardImageData={data}
-    />
-  </>
+    <FreeCellBoard />
+  </ImageDataProvider>
 )
 
 export const query = graphql`

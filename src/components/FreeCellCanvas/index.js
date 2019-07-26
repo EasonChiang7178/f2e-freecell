@@ -1,7 +1,10 @@
 import React from 'react'
 import { Stage, Layer } from 'react-konva/lib/ReactKonvaCore'
 
-import Card from './cards'
+import FreeDeck from './decks/FreeDeck'
+import SolvedDeck from './decks/SolvedDeck'
+
+import ImageDataConsumer, { ImageDataProvider } from '../../contexts/ImageDataContext'
 
 class FreeCellCanvas extends React.PureComponent {
 
@@ -9,20 +12,19 @@ class FreeCellCanvas extends React.PureComponent {
 
   getCanvasHeight = () => window.innerHeight
 
-  renderCards = () => {
-    const cardImageData = this.props.cardImageData
-
-    return Object.keys(cardImageData).map((cardId) => (
-      <Card key={cardId} imageData={cardImageData[cardId]} />
-    ))
-  }
-
   render = () => (
-    <Stage width={this.getCanvasWidth()} height={this.getCanvasHeight()}>
-      <Layer>
-        {this.renderCards()}
-      </Layer>
-    </Stage>
+    <ImageDataConsumer>
+      {imageData => (
+        <Stage width={this.getCanvasWidth()} height={this.getCanvasHeight()}>
+          <ImageDataProvider imageData={imageData}>
+            <Layer>
+              <FreeDeck />
+              <SolvedDeck />
+            </Layer>
+          </ImageDataProvider>
+        </Stage>
+      )}
+    </ImageDataConsumer>
   )
 }
 

@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import { Group } from 'react-konva/lib/ReactKonvaCore'
 
 import EmptyCell from "../cells/EmptyCell"
-import Card from "../cells/cards"
+import Card from "../cells/Card"
 
 class FreeDeck extends React.PureComponent {
   static propTypes = {
