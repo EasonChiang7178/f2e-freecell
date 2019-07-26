@@ -1,7 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
 
-import { Image } from 'react-konva'
+import { Image } from 'react-konva/lib/ReactKonvaCore'
+import "konva/lib/shapes/Image"
 
 class CanvasImage extends React.PureComponent {
   static propTypes = {

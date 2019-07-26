@@ -1,5 +1,6 @@
 import React from 'react'
-import { Stage, Layer } from 'react-konva'
+import { Stage, Layer } from 'react-konva/lib/ReactKonvaCore'
+
 import Card from './cards'
 
 class FreeCellCanvas extends React.PureComponent {
