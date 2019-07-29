@@ -12,17 +12,20 @@ class StackedDeck extends React.PureComponent {
     x: PropTypes.number,
     y: PropTypes.number,
     cards: PropTypes.array,
+    dragDisabled: PropTypes.bool,
     setRef: PropTypes.func
   }
 
   static defaultProps = {
     x: 0,
     y: 0,
+    dragDisabled: false,
     cards: []
   }
 
   isCardDraggable = (i) => {
-    return Freecell.isCardInStackDraggable(this.props.cards, i)
+    const { dragDisabled, cards } = this.props
+    return !dragDisabled && Freecell.isCardInStackDraggable(cards, i)
   }
 
   renderCards = () => this.props.cards.map((card, i) => (

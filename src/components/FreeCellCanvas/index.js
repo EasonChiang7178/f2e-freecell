@@ -29,6 +29,10 @@ class FreeCellCanvas extends React.PureComponent {
     draggingCards: []
   }
 
+  state = {
+    dragDisabled: false
+  }
+
   getCanvasWidth = () => 1440 // [TODO] Support SSR and responsive simultaneously
 
   getCanvasHeight = () => 821 // [TODO] Support SSR and responsive simultaneously
@@ -43,6 +47,8 @@ class FreeCellCanvas extends React.PureComponent {
   }
 
   handleDraggingLayerDragEnd = (e) => {
+    this.setState(() => ({ dragDisabled: true }))
+
     const { deckIndex, cardIndex } = this.props.prevDraggingCardsPos
     const endPosCardId = this.props.gameState[deckIndex][cardIndex - 1]
     
@@ -57,7 +63,7 @@ class FreeCellCanvas extends React.PureComponent {
       onFinish: () => {
         e.target.getChildren().each(child => {
           child.to({
-            duration: 0.6,
+            duration: 0.45,
             easing: Konva.Easings.ElasticEaseOut,
             shadowOffsetX: 0, shadowOffsetY: 0,
             shadowBlur: 0,
@@ -65,10 +71,11 @@ class FreeCellCanvas extends React.PureComponent {
         })
 
         e.target.to({
-          duration: 0.6,
+          duration: 0.45,
           easing: Konva.Easings.ElasticEaseOut,
           scaleX: 1, scaleY: 1,
           onFinish: () => {
+            this.setState(() => ({ dragDisabled: false }))
             this.props.moveDraggingCardsToPuzzle()
           }
         })
@@ -97,6 +104,7 @@ class FreeCellCanvas extends React.PureComponent {
 
   render = () => {
     const { gameState, draggingCards, draggingStartPos } = this.props
+    const { dragDisabled } = this.state
 
     return (
       <ImageDataConsumer>
@@ -113,7 +121,7 @@ class FreeCellCanvas extends React.PureComponent {
                 <FreeDeck />
                 <SolvedDeck />
 
-                <PuzzleBoard deckOfCards={gameState} />
+                <PuzzleBoard deckOfCards={gameState} dragDisabled={dragDisabled} />
               </Layer>
 
               {/* Dragging Cards Layer */}

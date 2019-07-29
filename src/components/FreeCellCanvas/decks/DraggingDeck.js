@@ -29,7 +29,7 @@ class DraggingDeck extends React.PureComponent {
     const { cards, x, y } = this.props
 
     return cards.length !== 0 && (
-      <StackedDeck cards={cards} x={x} y={y} setRef={this.setDraggingDeckRef} />
+      <StackedDeck cards={cards} x={x} y={y} dragDisabled={true} setRef={this.setDraggingDeckRef} />
     )
   }
 }

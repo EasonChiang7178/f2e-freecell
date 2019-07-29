@@ -8,17 +8,19 @@ class PuzzleBoard extends React.PureComponent {
   static propTypes = {
     x: PropTypes.number,
     y: PropTypes.number,
-    deckOfCards: PropTypes.array
+    deckOfCards: PropTypes.array,
+    dragDisabled: PropTypes.bool
   }
 
   static defaultProps = {
     x: 179,
     y: 234,
-    deckOfCards: []
+    deckOfCards: [],
+    dragDisabled: false
   }
 
   renderStackedDecks = () => this.props.deckOfCards.map((cards, i) => (
-    <StackedDeck key={i} cards={cards} x={(100 + 16) * i} y={0} />
+    <StackedDeck key={i} cards={cards} x={(100 + 16) * i} y={0} dragDisabled={this.props.dragDisabled} />
   ))
 
   render = () => {
