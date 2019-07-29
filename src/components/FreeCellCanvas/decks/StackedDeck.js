@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { Group } from 'react-konva/lib/ReactKonvaCore'
 
 import Card from "../cells/Card"
+import Freecell from "../../../utils/freecell"
 
 class StackedDeck extends React.PureComponent {
   static propTypes = {
@@ -17,12 +18,12 @@ class StackedDeck extends React.PureComponent {
     cards: []
   }
 
-  isDraggable = (i) => {
-    return i === this.props.cards.length - 1
+  isCardDraggable = (i) => {
+    return Freecell.isCardInStackDraggable(this.props.cards, i)
   }
 
   renderCards = () => this.props.cards.map((card, i) => (
-    <Card id={card.id} key={card.id} x={0} y={32 * i} draggable={this.isDraggable(i)} />
+    <Card id={card.id} key={card.id} x={0} y={32 * i} draggable={this.isCardDraggable(i)} />
   ))
 
   render = () => {
