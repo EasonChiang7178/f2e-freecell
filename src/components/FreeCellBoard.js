@@ -51,11 +51,11 @@ class FreeCellBoard extends React.PureComponent {
       ]
     }))
 
-    setTimeout(() => this.setState(({
+    setTimeout(() => this.setState(() => ({
       draggingCards: [],
       draggingStartPos: { x: 0, y: 0 },
       prevDraggingCardsPos: { deckIndex: 0, cardIndex: 0 }
-    })), 50)
+    })), 30)
   }
 
   render = () => {
