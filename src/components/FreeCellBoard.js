@@ -55,7 +55,7 @@ class FreeCellBoard extends React.PureComponent {
       draggingCards: [],
       draggingStartPos: { x: 0, y: 0 },
       prevDraggingCardsPos: { deckIndex: 0, cardIndex: 0 }
-    })), 30)
+    })), 0)
   }
 
   render = () => {

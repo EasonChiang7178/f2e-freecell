@@ -1,8 +1,15 @@
 import React from "react"
 import PropTypes from "prop-types"
+import LRU from "lru-cache"
 
 import { Image } from 'react-konva/lib/ReactKonvaCore'
 import "konva/lib/shapes/Image"
+
+const LRUOptions = {
+  max: 500,
+  length: (_, key) => key.length,
+  maxAge: 1000 * 60 * 60 * 3,
+}
 
 class CanvasImage extends React.PureComponent {
   static propTypes = {
@@ -23,16 +30,25 @@ class CanvasImage extends React.PureComponent {
     draggable: false
   }
 
-  state = {
-    image: this.loadPlaceholder()
+  static imageCache = new LRU(LRUOptions)
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      image: CanvasImage.imageCache.get(props.name) || this.loadPlaceholder()
+    }
   }
 
   componentDidMount() {
-    this.loadImage()
+    if (CanvasImage.imageCache.has(this.props.name) === false) {
+      this.loadImage()
+    }
   }
 
   componentDidUpdate(oldProps) {
     if (
+      CanvasImage.imageCache.has(this.props.name) === false &&
       oldProps.src !== this.props.src &&
       oldProps.srcSet !== this.props.srcSet
     ) {
@@ -44,10 +60,6 @@ class CanvasImage extends React.PureComponent {
         }))
       }
     }
-  }
-
-  componentWillUnmount() {
-    this.image.removeEventListener('load', this.handleLoad)
   }
 
   loadPlaceholder() {
@@ -71,6 +83,9 @@ class CanvasImage extends React.PureComponent {
     this.setState({
       image: this.image
     })
+    this.image.removeEventListener('load', this.handleLoad)
+    
+    CanvasImage.imageCache.set(this.props.name, this.image)
   }
 
   handleMoveOver = () => {

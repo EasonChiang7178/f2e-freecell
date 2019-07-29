@@ -27,6 +27,7 @@ class EmptyWaterMarkCell extends React.PureComponent {
       <Group x={this.props.x} y={this.props.y}>
         <EmptyCell />
         <Image
+          name={this.props.category}
           x={20}
           y={45}
           base64={base64}
