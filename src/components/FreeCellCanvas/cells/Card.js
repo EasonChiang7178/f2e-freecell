@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 
 import ImageDataConsumer from "../../../contexts/ImageDataContext"
 import Image from "../Image"
+import { CARD_SHADOW_BLUR } from "../../../constants/LAYOUTS"
 
 class Card extends React.PureComponent {
   static propTypes = {
@@ -33,6 +34,12 @@ class Card extends React.PureComponent {
         src={src}
         srcSet={srcSet}
         draggable={draggable}
+        style={{
+          shadowColor: "black",
+          shadowOpacity: .3,
+          shadowBlur: CARD_SHADOW_BLUR,
+          shadowOffsetY: 2
+        }}
       />
     )
   }

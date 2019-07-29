@@ -21,6 +21,7 @@ class CanvasImage extends React.PureComponent {
     height: PropTypes.number.isRequired,
     src: PropTypes.string,
     srcSet: PropTypes.string,
+    style: PropTypes.object,
     draggable: PropTypes.bool.isRequired
   }
 
@@ -84,7 +85,7 @@ class CanvasImage extends React.PureComponent {
       image: this.image
     })
     this.image.removeEventListener('load', this.handleLoad)
-    
+
     CanvasImage.imageCache.set(this.props.name, this.image)
   }
 
@@ -97,7 +98,7 @@ class CanvasImage extends React.PureComponent {
   }
 
   render = () => {
-    const { name, x, y, width, height, draggable } = this.props
+    const { name, x, y, width, height, draggable, style } = this.props
 
     return (
       <Image
@@ -117,6 +118,7 @@ class CanvasImage extends React.PureComponent {
           onDragStart: () => {}, // [NOTE] handle the drag events by event delegation in State component
           onDragEnd: () => {}
         })}
+        {...style}
       />
     )
   }

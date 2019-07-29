@@ -11,8 +11,7 @@ import DraggingDeck from './decks/DraggingDeck'
 import PuzzleBoard from './PuzzleBoard'
 import Freecell from '../../utils/freecell'
 
-import { STACKED_CARD_OFFSET_Y } from '../../constants/LAYOUTS'
-import COLORS from '../../constants/COLORS'
+import { STACKED_CARD_OFFSET_Y, CARD_SHADOW_BLUR } from '../../constants/LAYOUTS'
 
 class FreeCellCanvas extends React.PureComponent {
   static propTypes = {
@@ -56,8 +55,8 @@ class FreeCellCanvas extends React.PureComponent {
     const targetDropPos = targetDropCard.getClientRect()
 
     e.target.to({
-      x: targetDropPos.x,
-      y: targetDropPos.y + STACKED_CARD_OFFSET_Y,
+      x: targetDropPos.x + CARD_SHADOW_BLUR,
+      y: targetDropPos.y + STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR,
       duration: 0.15,
       easing: Konva.Easings.EaseOut,
       onFinish: () => {
@@ -65,8 +64,8 @@ class FreeCellCanvas extends React.PureComponent {
           child.to({
             duration: 0.45,
             easing: Konva.Easings.ElasticEaseOut,
-            shadowOffsetX: 0, shadowOffsetY: 0,
-            shadowBlur: 0,
+            shadowOffsetX: 0, shadowOffsetY: 2,
+            shadowBlur: CARD_SHADOW_BLUR, shadowOpacity: .3
           })
         })
 
@@ -88,7 +87,6 @@ class FreeCellCanvas extends React.PureComponent {
     
     e.target.getChildren().each(child => {
       child.setAttrs({
-        shadowColor: COLORS.BLACK,
         shadowBlur: 16,
         shadowOpacity: .4,
         shadowOffset: { x: 0, y: 4 },
