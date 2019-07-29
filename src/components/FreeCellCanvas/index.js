@@ -9,9 +9,9 @@ import PuzzleBoard from './PuzzleBoard'
 
 class FreeCellCanvas extends React.PureComponent {
 
-  getCanvasWidth = () => window.innerWidth
+  getCanvasWidth = () => 1440 // [TODO] Support SSR and responsive simultaneously
 
-  getCanvasHeight = () => window.innerHeight
+  getCanvasHeight = () => 821 // [TODO] Support SSR and responsive simultaneously
 
   render = () => (
     <ImageDataConsumer>
