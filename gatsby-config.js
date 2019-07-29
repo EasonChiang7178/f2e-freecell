@@ -1,4 +1,5 @@
 module.exports = {
+  pathPrefix: "/f2e-freecell",
   siteMetadata: {
     title: `Retro Free Cell`,
     description: `復古風新接龍 | Designed by cyc`,
