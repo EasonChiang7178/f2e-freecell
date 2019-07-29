@@ -24,6 +24,18 @@ class Freecell {
     })
   }
 
+  static getCardPosInPuzzleDeck(cardsOfDecks, cardId) {
+    for (let i = 0; i < cardsOfDecks.length; i++) {
+      for (let j = 0; j < cardsOfDecks[i].length; j++) {
+        if (cardsOfDecks[i][j].id === cardId) {
+          return [i, j]
+        }
+      }
+    }
+
+    throw Error("Card not find in puzzle!")
+  }
+
   static getCardCategoryAndNumber(cardId) {
     const [ category, number ] = cardId.split("_")
     return [ category, this.getCardNumber(number) ]

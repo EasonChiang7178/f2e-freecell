@@ -1,43 +1,112 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Stage, Layer } from 'react-konva/lib/ReactKonvaCore'
+import Konva from "konva"
 
 import ImageDataConsumer, { ImageDataProvider } from '../../contexts/ImageDataContext'
 
 import FreeDeck from './decks/FreeDeck'
 import SolvedDeck from './decks/SolvedDeck'
+import DraggingDeck from './decks/DraggingDeck'
 import PuzzleBoard from './PuzzleBoard'
+import Freecell from '../../utils/freecell'
+
+import { STACKED_CARD_OFFSET_Y } from '../../constants/LAYOUTS'
 
 class FreeCellCanvas extends React.PureComponent {
   static propTypes = {
     gameState: PropTypes.array.isRequired,
-    draggingStack: PropTypes.array
+    draggingStartPos: PropTypes.object,
+    draggingCards: PropTypes.array,
+    prevDraggingCardsPos: PropTypes.object,
+    moveCardsToDrag: PropTypes.func.isRequired,
+    moveDraggingCardsToPuzzle: PropTypes.func.isRequired
   }
 
   static defaultProps = {
-    draggingStack: []
+    draggingStartPos: { x: 0, y: 0 },
+    draggingCards: []
   }
 
   getCanvasWidth = () => 1440 // [TODO] Support SSR and responsive simultaneously
 
   getCanvasHeight = () => 821 // [TODO] Support SSR and responsive simultaneously
 
+  handlePuzzleLayerDragStart = (e) => {
+    const cardId = e.target.name()
+
+    const [deckIndex, cardIndex] = Freecell.getCardPosInPuzzleDeck(this.props.gameState, cardId)
+    const { x, y } = e.target.getClientRect()
+    
+    this.props.moveCardsToDrag(deckIndex, cardIndex, { x, y })
+  }
+
+  handleDraggingLayerDragEnd = (e) => {
+    const { deckIndex, cardIndex } = this.props.prevDraggingCardsPos
+    const endPosCardId = this.props.gameState[deckIndex][cardIndex - 1]
+    
+    const targetDropCard = this.stageNode.findOne(`.${endPosCardId.id}`)
+    const targetDropPos = targetDropCard.getClientRect()
+
+    e.target.to({
+      x: targetDropPos.x,
+      y: targetDropPos.y + STACKED_CARD_OFFSET_Y,
+      duration: 0.15,
+      easing: Konva.Easings.EaseOut,
+      onFinish: () => {
+        e.target.to({
+          duration: 0.5,
+          easing: Konva.Easings.ElasticEaseOut,
+          scaleX: 1, scaleY: 1,
+          shadowOffsetX: 0, shadowOffsetY: 0,
+          shadowBlur: 0,
+          onFinish: () => {
+            this.props.moveDraggingCardsToPuzzle()
+          }
+        })
+      }
+    })
+  }
+
+  handleDraggingLayerDragStart = (e) => {
+    e.cancelBubble = true
+
+    e.target.setAttrs({
+      shadowBlur: 10,
+      shadowOpacity: .6,
+      shadowOffset: { x: 2, y: 2 },
+      scaleX: 1.05, scaleY: 1.05
+    })
+  }
+
+  setStageRef = (node) => this.stageNode = node
+
   render = () => {
-    const { gameState } = this.props
+    const { gameState, draggingCards, draggingStartPos } = this.props
 
     return (
       <ImageDataConsumer>
         {imageData => (
-          <Stage width={this.getCanvasWidth()} height={this.getCanvasHeight()}>
+          <Stage
+            width={this.getCanvasWidth()}
+            height={this.getCanvasHeight()}
+            ref={this.setStageRef}
+          >
             <ImageDataProvider imageData={imageData}>
-              <Layer>
+
+              {/* Puzzle Layer */}
+              <Layer onDragStart={this.handlePuzzleLayerDragStart}>
                 <FreeDeck />
                 <SolvedDeck />
 
-                <PuzzleBoard
-                  deckOfCards={gameState}
-                />
+                <PuzzleBoard deckOfCards={gameState} />
               </Layer>
+
+              {/* Dragging Cards Layer */}
+              <Layer onDragStart={this.handleDraggingLayerDragStart} onDragEnd={this.handleDraggingLayerDragEnd}>
+                <DraggingDeck cards={draggingCards} x={draggingStartPos.x} y={draggingStartPos.y} />
+              </Layer>
+
             </ImageDataProvider>
           </Stage>
         )}

@@ -1,12 +1,12 @@
 import React from "react"
 import PropTypes from "prop-types"
-import Konva from "konva"
 
 import { Image } from 'react-konva/lib/ReactKonvaCore'
 import "konva/lib/shapes/Image"
 
 class CanvasImage extends React.PureComponent {
   static propTypes = {
+    name: PropTypes.string,
     x: PropTypes.number,
     y: PropTypes.number,
     base64: PropTypes.string,
@@ -81,36 +81,12 @@ class CanvasImage extends React.PureComponent {
     document.body.style.cursor = 'default'
   }
 
-  handleDragStart = (e) => {
-    e.target.setAttrs({
-      shadowBlur: 10,
-      shadowOpacity: .6,
-      shadowOffset: {
-        x: 2,
-        y: 2
-      },
-      scaleX: 1.05,
-      scaleY: 1.05
-    })
-  }
-
-  handleDragEnd = (e) => {
-    e.target.to({
-      duration: 0.5,
-      easing: Konva.Easings.ElasticEaseOut,
-      scaleX: 1,
-      scaleY: 1,
-      shadowOffsetX: 0,
-      shadowOffsetY: 0,
-      shadowBlur: 0
-    })
-  }
-
   render = () => {
-    const { x, y, width, height, draggable } = this.props
+    const { name, x, y, width, height, draggable } = this.props
 
     return (
       <Image
+        name={name}
         x={x}
         y={y}
         width={width}
@@ -123,8 +99,8 @@ class CanvasImage extends React.PureComponent {
         {...(draggable && {
           onMouseOver: this.handleMoveOver,
           onMouseOut: this.handleMoveOut,
-          onDragStart: this.handleDragStart,
-          onDragEnd: this.handleDragEnd
+          onDragStart: () => {}, // [NOTE] handle the drag events by event delegation in State component
+          onDragEnd: () => {}
         })}
       />
     )

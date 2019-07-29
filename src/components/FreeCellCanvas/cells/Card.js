@@ -19,13 +19,14 @@ class Card extends React.PureComponent {
   }
 
   render = () => {
-    const { x, y, draggable } = this.props
+    const { id, x, y, draggable } = this.props
     const { base64, width, height, src, srcSet } = this.props.imageData.childImageSharp.fixed
     
     return (
       <Image
         x={x}
         y={y}
+        name={id}
         base64={base64}
         width={width / 2} // [NOTE] hotfix, for retina resolution support
         height={height / 2}

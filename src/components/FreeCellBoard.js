@@ -14,16 +14,61 @@ class FreeCellBoard extends React.PureComponent {
       [{ id: 'spade_3' }, { id: 'diamond_8' }, { id: 'club_5' }, { id: 'club_3' }, { id: 'spade_j' }, { id: 'club_4' }],
     ],
     history: [],
-    draggingStack: []
+    draggingStartPos: { x: 0, y: 0 },
+    draggingCards: [],
+    prevDraggingCardsPos: { deckIndex: 0, cardIndex: 0 }
+  }
+
+  moveCardsToDrag = (deckIndex, cardIndex, startPos) => {
+    const { gameState } = this.state
+
+    const updatedDeckCards = gameState[deckIndex].slice(0, cardIndex)
+    const toDraggingCards = gameState[deckIndex].slice(cardIndex)
+
+    this.setState(state => ({
+      gameState: [
+        ...state.gameState.slice(0, deckIndex),
+        updatedDeckCards,
+        ...state.gameState.slice(deckIndex + 1)
+      ],
+      draggingCards: toDraggingCards,
+      draggingStartPos: startPos,
+      prevDraggingCardsPos: { deckIndex, cardIndex }
+    }))
+  }
+
+  moveDraggingCardsToPuzzle = (deckIndex) => {
+    const { gameState, draggingCards, prevDraggingCardsPos } = this.state
+    const targetDeckIndex = deckIndex || prevDraggingCardsPos.deckIndex
+
+    const updatedDeckCards = gameState[targetDeckIndex].concat(draggingCards)
+
+    this.setState(state => ({
+      gameState: [
+        ...state.gameState.slice(0, targetDeckIndex),
+        updatedDeckCards,
+        ...state.gameState.slice(targetDeckIndex + 1)
+      ]
+    }))
+
+    setTimeout(() => this.setState(({
+      draggingCards: [],
+      draggingStartPos: { x: 0, y: 0 },
+      prevDraggingCardsPos: { deckIndex: 0, cardIndex: 0 }
+    })), 50)
   }
 
   render = () => {
-    const { gameState, draggingStack } = this.state
+    const { gameState, draggingStartPos, draggingCards, prevDraggingCardsPos } = this.state
     
     return (
       <FreeCellCanvas
         gameState={gameState}
-        draggingStack={draggingStack}
+        draggingStartPos={draggingStartPos}
+        draggingCards={draggingCards}
+        prevDraggingCardsPos={prevDraggingCardsPos}
+        moveCardsToDrag={this.moveCardsToDrag}
+        moveDraggingCardsToPuzzle={this.moveDraggingCardsToPuzzle}
       />
     )
   }
