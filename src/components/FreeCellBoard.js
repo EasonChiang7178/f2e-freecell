@@ -13,12 +13,18 @@ class FreeCellBoard extends React.PureComponent {
       [{ id: 'club_6' }, { id: 'diamond_3' }, { id: 'heart_5' }, { id: 'diamond_j' }, { id: 'diamond_5' }, { id: 'heart_7' }],
       [{ id: 'spade_3' }, { id: 'diamond_8' }, { id: 'club_5' }, { id: 'club_3' }, { id: 'spade_j' }, { id: 'club_4' }],
     ],
-    history: []
+    history: [],
+    draggingStack: []
   }
 
   render = () => {
+    const { gameState, draggingStack } = this.state
+    
     return (
-      <FreeCellCanvas state={this.state.gameState} />
+      <FreeCellCanvas
+        gameState={gameState}
+        draggingStack={draggingStack}
+      />
     )
   }
 }

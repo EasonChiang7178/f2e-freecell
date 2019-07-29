@@ -10,31 +10,40 @@ import PuzzleBoard from './PuzzleBoard'
 
 class FreeCellCanvas extends React.PureComponent {
   static propTypes = {
-    state: PropTypes.array.isRequired
+    gameState: PropTypes.array.isRequired,
+    draggingStack: PropTypes.array
+  }
+
+  static defaultProps = {
+    draggingStack: []
   }
 
   getCanvasWidth = () => 1440 // [TODO] Support SSR and responsive simultaneously
 
   getCanvasHeight = () => 821 // [TODO] Support SSR and responsive simultaneously
 
-  render = () => (
-    <ImageDataConsumer>
-      {imageData => (
-        <Stage width={this.getCanvasWidth()} height={this.getCanvasHeight()}>
-          <ImageDataProvider imageData={imageData}>
-            <Layer>
-              <FreeDeck />
-              <SolvedDeck />
+  render = () => {
+    const { gameState } = this.props
 
-              <PuzzleBoard
-                deckOfCards={this.props.state}
-              />
-            </Layer>
-          </ImageDataProvider>
-        </Stage>
-      )}
-    </ImageDataConsumer>
-  )
+    return (
+      <ImageDataConsumer>
+        {imageData => (
+          <Stage width={this.getCanvasWidth()} height={this.getCanvasHeight()}>
+            <ImageDataProvider imageData={imageData}>
+              <Layer>
+                <FreeDeck />
+                <SolvedDeck />
+
+                <PuzzleBoard
+                  deckOfCards={gameState}
+                />
+              </Layer>
+            </ImageDataProvider>
+          </Stage>
+        )}
+      </ImageDataConsumer>
+    )
+  }
 }
 
 export default FreeCellCanvas
