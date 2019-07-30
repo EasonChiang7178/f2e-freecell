@@ -27,7 +27,7 @@ class PuzzleBoard extends React.PureComponent {
     const { x, y } = this.props
 
     return (
-      <Group x={x} y={y}>
+      <Group x={x} y={y} name="puzzle-board">
         {this.renderStackedDecks()}
       </Group>
     )

@@ -27,7 +27,7 @@ class FreeDeck extends React.PureComponent {
   render = () => {
 
     return (
-      <Group x={139} y={51}>
+      <Group x={139} y={51} name="free-deck">
         {this.renderCell(0)}
         {this.renderCell(1)}
         {this.renderCell(2)}

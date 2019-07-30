@@ -36,6 +36,39 @@ class FreeCellCanvas extends React.PureComponent {
 
   getCanvasHeight = () => 821 // [TODO] Support SSR and responsive simultaneously
 
+  getDroppableFreeCells = () => {
+    const freeDeck = this.stageNode.findOne('.free-deck')
+    const allFreeCells = freeDeck.children
+    const freeCells = allFreeCells.filter(cell => {
+      const cellInside = cell.children
+      return !cellInside[cellInside.length - 1].name()
+    })
+
+    return freeCells
+  }
+
+  getDroppableSolvedTopCards = () => {
+    const solvedDeck = this.stageNode.findOne('.solved-deck')
+    const allSolvedCells = solvedDeck.children
+    const solvedTopCards = allSolvedCells.map(cell => {
+      const cellInside = cell.children
+      return cellInside[cellInside.length - 1]
+    })
+
+    return solvedTopCards
+  }
+
+  getDroppablePuzzleLeafCards = () => {
+    const puzzleBoard = this.stageNode.findOne('.puzzle-board')
+    const stackDecks = puzzleBoard.children
+    const leafCards = stackDecks.map(deck => {
+      const cards = deck.children
+      return cards.length !== 0 ? cards[cards.length - 1] : null
+    })
+
+    return leafCards
+  }
+
   handlePuzzleLayerDragStart = (e) => {
     const cardId = e.target.name()
 
@@ -45,12 +78,28 @@ class FreeCellCanvas extends React.PureComponent {
     this.props.moveCardsToDrag(deckIndex, cardIndex, { x, y })
   }
 
+  handleDraggingLayerDragStart = (e) => {
+    e.cancelBubble = true
+    
+    e.target.getChildren().each(child => {
+      child.setAttrs({
+        shadowBlur: 16,
+        shadowOpacity: .4,
+        shadowOffset: { x: 0, y: 4 },
+      })
+    })
+
+    e.target.setAttrs({
+      scaleX: 1.05, scaleY: 1.05
+    })
+  }
+
   handleDraggingLayerDragEnd = (e) => {
     this.setState(() => ({ dragDisabled: true }))
 
     const { deckIndex, cardIndex } = this.props.prevDraggingCardsPos
     const endPosCardId = this.props.gameState[deckIndex][cardIndex - 1]
-    
+
     const targetDropCard = this.stageNode.findOne(`.${endPosCardId.id}`)
     const targetDropPos = targetDropCard.getClientRect()
 
@@ -79,22 +128,6 @@ class FreeCellCanvas extends React.PureComponent {
           }
         })
       }
-    })
-  }
-
-  handleDraggingLayerDragStart = (e) => {
-    e.cancelBubble = true
-    
-    e.target.getChildren().each(child => {
-      child.setAttrs({
-        shadowBlur: 16,
-        shadowOpacity: .4,
-        shadowOffset: { x: 0, y: 4 },
-      })
-    })
-
-    e.target.setAttrs({
-      scaleX: 1.05, scaleY: 1.05
     })
   }
 

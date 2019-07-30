@@ -39,7 +39,7 @@ class SolvedDeck extends React.PureComponent {
 
   render = () => {
     return (
-      <Group x={687} y={51}>
+      <Group x={687} y={51} name="solved-deck">
         {this.renderSolvedSpadeDeck()}
         {this.renderSolvedHeartDeck()}
         {this.renderSolvedDiamondDeck()}
