@@ -26,6 +26,7 @@
     "styled-normalize": "^8.0.6"
   },
   "devDependencies": {
+    "gatsby-plugin-remove-serviceworker": "^1.0.0",
     "gh-pages": "^2.0.1",
     "prettier": "^1.18.2"
   },
