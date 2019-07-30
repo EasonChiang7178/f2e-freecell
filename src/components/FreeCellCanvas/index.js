@@ -15,21 +15,22 @@ import { STACKED_CARD_OFFSET_Y, CARD_SHADOW_BLUR } from '../../constants/LAYOUTS
 
 class FreeCellCanvas extends React.PureComponent {
   static propTypes = {
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
     draggingStartPos: PropTypes.object,
     draggingCards: PropTypes.array,
     prevDraggingCardsPos: PropTypes.object,
     moveCardsToDrag: PropTypes.func.isRequired,
-    moveDraggingCardsToPuzzle: PropTypes.func.isRequired
+    moveDraggingCardsToPuzzle: PropTypes.func.isRequired,
+    moveDraggingCardsToFreeCell: PropTypes.func.isRequired
   }
 
   static defaultProps = {
     draggingStartPos: { x: 0, y: 0 },
-    draggingCards: []
+    draggingCards: [],
   }
 
   state = {
-    dragDisabled: false
+    dragDisabled: false,
   }
 
   getCanvasWidth = () => 1440 // [TODO] Support SSR and responsive simultaneously
@@ -37,7 +38,7 @@ class FreeCellCanvas extends React.PureComponent {
   getCanvasHeight = () => 821 // [TODO] Support SSR and responsive simultaneously
 
   getDroppableFreeCells = () => {
-    const freeDeck = this.stageNode.findOne('.free-deck')
+    const freeDeck = this.stageNode.findOne(".free-deck")
     const allFreeCells = freeDeck.children
     const freeCells = allFreeCells.filter(cell => {
       const cellInside = cell.children
@@ -48,7 +49,7 @@ class FreeCellCanvas extends React.PureComponent {
   }
 
   getDroppableSolvedTopCards = () => {
-    const solvedDeck = this.stageNode.findOne('.solved-deck')
+    const solvedDeck = this.stageNode.findOne(".solved-deck")
     const allSolvedCells = solvedDeck.children
     const solvedTopCards = allSolvedCells.map(cell => {
       const cellInside = cell.children
@@ -59,7 +60,7 @@ class FreeCellCanvas extends React.PureComponent {
   }
 
   getDroppablePuzzleLeafCards = () => {
-    const puzzleBoard = this.stageNode.findOne('.puzzle-board')
+    const puzzleBoard = this.stageNode.findOne(".puzzle-board")
     const stackDecks = puzzleBoard.children
     const leafCards = stackDecks.map(deck => {
       const cards = deck.children
@@ -69,41 +70,43 @@ class FreeCellCanvas extends React.PureComponent {
     return leafCards
   }
 
-  handlePuzzleLayerDragStart = (e) => {
+  handlePuzzleLayerDragStart = e => {
     const cardId = e.target.name()
 
-    const [deckIndex, cardIndex] = Freecell.getCardPosInPuzzleDeck(this.props.gameState, cardId)
+    const [deckIndex, cardIndex] = Freecell.getCardPosInPuzzleDeck(
+      this.props.gameState.puzzle,
+      cardId
+    )
     const { x, y } = e.target.getClientRect()
-    
+
     this.props.moveCardsToDrag(deckIndex, cardIndex, { x, y })
   }
 
-  handleDraggingLayerDragStart = (e) => {
+  handleDraggingLayerDragStart = e => {
     e.cancelBubble = true
-    
+
     e.target.getChildren().each(child => {
       child.setAttrs({
         shadowBlur: 16,
-        shadowOpacity: .4,
+        shadowOpacity: 0.4,
         shadowOffset: { x: 0, y: 4 },
       })
     })
 
     e.target.setAttrs({
-      scaleX: 1.05, scaleY: 1.05
+      scaleX: 1.05,
+      scaleY: 1.05,
     })
   }
 
-  handleDraggingLayerDragEnd = (e) => {
+  handleDraggingLayerDragEnd = e => {
     this.setState(() => ({ dragDisabled: true }))
     const draggingCards = e.target
     const pointerClientX = e.evt.clientX
     const pointerClientY = e.evt.clientY
 
-    const isPosInsideRect = (x, y, rectX, rectY, rectW, rectH) => (
-      rectX <= x  && x <= (rectX + rectW) &&
-      rectY <= y && y <= (rectY + rectH)
-    )
+    const isPosInsideRect = (x, y, rectX, rectY, rectW, rectH) =>
+      rectX <= x && x <= rectX + rectW && rectY <= y && y <= rectY + rectH
 
     let targetDropCell = null
 
@@ -112,27 +115,31 @@ class FreeCellCanvas extends React.PureComponent {
     targetDropCell = freeCells.find(cell => {
       const rect = cell.getClientRect()
       return isPosInsideRect(
-        pointerClientX, pointerClientY,
-        rect.x, rect.y, rect.width, rect.height
+        pointerClientX,
+        pointerClientY,
+        rect.x,
+        rect.y,
+        rect.width,
+        rect.height
       )
     })
     
+    const targetDropFreeCellIndex = this.stageNode
+      .findOne(".free-deck").children
+      .findIndex(cell => cell === targetDropCell)
+
     if (targetDropCell) {
       const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
-      this.animateCardsToPos(
-        draggingCards,
-        targetPosX, targetPosY,
-        () => {
-          this.setState(() => ({ dragDisabled: false }))
-          // TODO
-        }
-      )
+      this.animateCardsToPos(draggingCards, targetPosX + 1, targetPosY + 1, () => {
+        this.setState(() => ({ dragDisabled: false }))
+        this.props.moveDraggingCardsToFreeCell(targetDropFreeCellIndex)
+      })
 
       return
     }
 
     const { deckIndex, cardIndex } = this.props.prevDraggingCardsPos
-    const endPosCardId = this.props.gameState[deckIndex][cardIndex - 1]
+    const endPosCardId = this.props.gameState.puzzle[deckIndex][cardIndex - 1]
 
     const targetDropCard = this.stageNode.findOne(`.${endPosCardId.id}`)
     const targetDropPos = targetDropCard.getClientRect()
@@ -177,7 +184,7 @@ class FreeCellCanvas extends React.PureComponent {
     })
   }
 
-  setStageRef = (node) => this.stageNode = node
+  setStageRef = node => (this.stageNode = node)
 
   render = () => {
     const { gameState, draggingCards, draggingStartPos } = this.props
@@ -192,20 +199,33 @@ class FreeCellCanvas extends React.PureComponent {
             ref={this.setStageRef}
           >
             <ImageDataProvider imageData={imageData}>
-
               {/* Puzzle Layer */}
               <Layer onDragStart={this.handlePuzzleLayerDragStart}>
-                <FreeDeck />
+                <FreeDeck
+                  pos0Card={gameState.free.pos0Card}
+                  pos1Card={gameState.free.pos1Card}
+                  pos2Card={gameState.free.pos2Card}
+                  pos3Card={gameState.free.pos3Card}
+                />
                 <SolvedDeck />
 
-                <PuzzleBoard deckOfCards={gameState} dragDisabled={dragDisabled} />
+                <PuzzleBoard
+                  deckOfCards={gameState.puzzle}
+                  dragDisabled={dragDisabled}
+                />
               </Layer>
 
               {/* Dragging Cards Layer */}
-              <Layer onDragStart={this.handleDraggingLayerDragStart} onDragEnd={this.handleDraggingLayerDragEnd}>
-                <DraggingDeck cards={draggingCards} x={draggingStartPos.x} y={draggingStartPos.y} />
+              <Layer
+                onDragStart={this.handleDraggingLayerDragStart}
+                onDragEnd={this.handleDraggingLayerDragEnd}
+              >
+                <DraggingDeck
+                  cards={draggingCards}
+                  x={draggingStartPos.x}
+                  y={draggingStartPos.y}
+                />
               </Layer>
-
             </ImageDataProvider>
           </Stage>
         )}
