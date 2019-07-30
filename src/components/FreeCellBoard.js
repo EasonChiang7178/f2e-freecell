@@ -27,7 +27,7 @@ class FreeCellBoard extends React.PureComponent {
     history: [],
     draggingStartPos: { x: 0, y: 0 },
     draggingCards: [],
-    prevDraggingCardsPos: { deckIndex: 0, cardIndex: 0 }
+    prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 }
   }
 
   moveCardsToDrag = (deckIndex, cardIndex, startPos) => {
@@ -47,7 +47,22 @@ class FreeCellBoard extends React.PureComponent {
       },
       draggingCards: toDraggingCards,
       draggingStartPos: startPos,
-      prevDraggingCardsPos: { deckIndex, cardIndex }
+      prevDraggingCardsPos: { ...state.prevDraggingCardsPos, deckIndex, cardIndex }
+    }))
+  }
+
+  moveFreeCardToDrag = (freeIndex, startPos) => {
+    this.setState(state => ({
+      gameState: {
+        ...state.gameState,
+        free: {
+          ...state.gameState.free,
+          [`pos${freeIndex}Card`]: null,
+        },
+      },
+      draggingCards: [ state.gameState.free[`pos${freeIndex}Card`] ],
+      draggingStartPos: startPos,
+      prevDraggingCardsPos: { ...state.prevDraggingCardsPos, freeIndex },
     }))
   }
 
@@ -71,13 +86,11 @@ class FreeCellBoard extends React.PureComponent {
     setTimeout(() => this.setState(() => ({
       draggingCards: [],
       draggingStartPos: { x: 0, y: 0 },
-      prevDraggingCardsPos: { deckIndex: 0, cardIndex: 0 }
+      prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 }
     })), 0)
   }
 
   moveDraggingCardsToFreeCell = (i) => {
-    const { gameState, draggingCards } = this.state
-
     this.setState(state => ({
       gameState: {
         ...state.gameState,
@@ -91,7 +104,7 @@ class FreeCellBoard extends React.PureComponent {
     setTimeout(() => this.setState(() => ({
       draggingCards: [],
       draggingStartPos: { x: 0, y: 0 },
-      prevDraggingCardsPos: { deckIndex: 0, cardIndex: 0 },
+      prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 },
     })), 0)
   }
 
@@ -105,6 +118,7 @@ class FreeCellBoard extends React.PureComponent {
         draggingCards={draggingCards}
         prevDraggingCardsPos={prevDraggingCardsPos}
         moveCardsToDrag={this.moveCardsToDrag}
+        moveFreeCardToDrag={this.moveFreeCardToDrag}
         moveDraggingCardsToPuzzle={this.moveDraggingCardsToPuzzle}
         moveDraggingCardsToFreeCell={this.moveDraggingCardsToFreeCell}
       />

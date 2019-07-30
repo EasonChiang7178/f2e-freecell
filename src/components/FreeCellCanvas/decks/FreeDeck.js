@@ -10,14 +10,15 @@ class FreeDeck extends React.PureComponent {
     pos0Card: PropTypes.object,
     pos1Card: PropTypes.object,
     pos2Card: PropTypes.object,
-    pos3Card: PropTypes.object
+    pos3Card: PropTypes.object,
+    onDragStart: PropTypes.func.isRequired
   }
 
   renderCell = (i) => {
     const card = this.props[`pos${i}Card`]
     
     return (
-      <Group x={(100 + 16) * i} y={0}>
+      <Group x={(100 + 16) * i} y={0} name={`freecell-${i}`}>
         <EmptyCell />
         {card && <Card key={card.id} id={card.id} draggable={true} />}
       </Group>
@@ -25,9 +26,8 @@ class FreeDeck extends React.PureComponent {
   }
 
   render = () => {
-
     return (
-      <Group x={139} y={51} name="free-deck">
+      <Group x={139} y={51} name="free-deck" onDragStart={this.props.onDragStart}>
         {this.renderCell(0)}
         {this.renderCell(1)}
         {this.renderCell(2)}

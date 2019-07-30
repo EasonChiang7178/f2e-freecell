@@ -9,7 +9,8 @@ class PuzzleBoard extends React.PureComponent {
     x: PropTypes.number,
     y: PropTypes.number,
     deckOfCards: PropTypes.array,
-    dragDisabled: PropTypes.bool
+    dragDisabled: PropTypes.bool,
+    onDragStart: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -24,10 +25,10 @@ class PuzzleBoard extends React.PureComponent {
   ))
 
   render = () => {
-    const { x, y } = this.props
+    const { x, y, onDragStart } = this.props
 
     return (
-      <Group x={x} y={y} name="puzzle-board">
+      <Group x={x} y={y} name="puzzle-board" onDragStart={onDragStart}>
         {this.renderStackedDecks()}
       </Group>
     )
