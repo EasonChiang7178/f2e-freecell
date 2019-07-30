@@ -122,31 +122,33 @@ class FreeCellCanvas extends React.PureComponent {
     let targetDropCell = null
 
     /* check for free cells */
-    const freeCells = this.getDroppableFreeCells()
-    targetDropCell = freeCells.find(cell => {
-      const rect = cell.getClientRect()
-      return isPosInsideRect(
-        pointerClientX,
-        pointerClientY,
-        rect.x,
-        rect.y,
-        rect.width,
-        rect.height
-      )
-    })
-
-    const targetDropFreeCellIndex = this.stageNode
-      .findOne(".free-deck").children
-      .findIndex(cell => cell === targetDropCell)
-
-    if (targetDropCell) {
-      const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
-      this.animateCardsToPos(draggingCards, targetPosX + 1, targetPosY + 1, () => {
-        this.setState(() => ({ dragDisabled: false }))
-        this.props.moveDraggingCardsToFreeCell(targetDropFreeCellIndex)
+    if (this.props.draggingCards.length === 1) {
+      const freeCells = this.getDroppableFreeCells()
+      targetDropCell = freeCells.find(cell => {
+        const rect = cell.getClientRect()
+        return isPosInsideRect(
+          pointerClientX,
+          pointerClientY,
+          rect.x,
+          rect.y,
+          rect.width,
+          rect.height
+        )
       })
 
-      return
+      const targetDropFreeCellIndex = this.stageNode
+        .findOne(".free-deck").children
+        .findIndex(cell => cell === targetDropCell)
+
+      if (targetDropCell) {
+        const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
+        this.animateCardsToPos(draggingCards, targetPosX + 1, targetPosY + 1, () => {
+          this.setState(() => ({ dragDisabled: false }))
+          this.props.moveDraggingCardsToFreeCell(targetDropFreeCellIndex)
+        })
+
+        return
+      }
     }
 
     /* bounce back card to dragging start position */
