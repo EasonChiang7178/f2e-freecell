@@ -108,6 +108,26 @@ class FreeCellBoard extends React.PureComponent {
     })), 0)
   }
 
+  moveDraggingCardsToSolvedDeck = (category) => {
+    this.setState(state => ({
+      gameState: {
+        ...state.gameState,
+        solved: {
+          ...state.gameState.solved,
+          [`${category}SolvedCards`]: state.gameState.solved[
+            `${category}SolvedCards`
+          ].concat(state.draggingCards),
+        },
+      },
+    }))
+
+    setTimeout(() => this.setState(() => ({
+      draggingCards: [],
+      draggingStartPos: { x: 0, y: 0 },
+      prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 },
+    })), 0)
+  }
+
   render = () => {
     const { gameState, draggingStartPos, draggingCards, prevDraggingCardsPos } = this.state
     
@@ -121,6 +141,7 @@ class FreeCellBoard extends React.PureComponent {
         moveFreeCardToDrag={this.moveFreeCardToDrag}
         moveDraggingCardsToPuzzle={this.moveDraggingCardsToPuzzle}
         moveDraggingCardsToFreeCell={this.moveDraggingCardsToFreeCell}
+        moveDraggingCardsToSolvedDeck={this.moveDraggingCardsToSolvedDeck}
       />
     )
   }

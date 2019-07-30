@@ -1,4 +1,18 @@
 class Freecell {
+  static isSolvable(topCardId, droppedCardId) {
+    const [topCardCategory, topCardNumber] = this.getCardCategoryAndNumber(topCardId)
+    const [droppedCategory, droppedCardNumber] = this.getCardCategoryAndNumber(droppedCardId)
+
+    if (
+      topCardCategory !== droppedCategory ||
+      (topCardNumber + 1) !== droppedCardNumber
+    ) {
+      return false
+    }
+
+    return true
+  }
+
   static isCardInStackDraggable(cards, cardInIndex) {
     if (cards.length === 0) {
       return false

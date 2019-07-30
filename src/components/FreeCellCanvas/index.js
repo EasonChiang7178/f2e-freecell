@@ -22,7 +22,8 @@ class FreeCellCanvas extends React.PureComponent {
     moveCardsToDrag: PropTypes.func.isRequired,
     moveFreeCardToDrag: PropTypes.func.isRequired,
     moveDraggingCardsToPuzzle: PropTypes.func.isRequired,
-    moveDraggingCardsToFreeCell: PropTypes.func.isRequired
+    moveDraggingCardsToFreeCell: PropTypes.func.isRequired,
+    moveDraggingCardsToSolvedDeck: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -88,7 +89,9 @@ class FreeCellCanvas extends React.PureComponent {
     const { x, y } = e.target.getClientRect()
 
     const freeCells = this.props.gameState.free
-    const freeIndex = Object.keys(freeCells).findIndex(key => (freeCells[key] && freeCells[key].id) === cardId)
+    const freeIndex = Object.keys(freeCells).findIndex(
+      key => (freeCells[key] && freeCells[key].id) === cardId
+    )
 
     this.props.moveFreeCardToDrag(freeIndex, { x, y })
   }
@@ -142,10 +145,51 @@ class FreeCellCanvas extends React.PureComponent {
 
       if (targetDropCell) {
         const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
-        this.animateCardsToPos(draggingCards, targetPosX + 1, targetPosY + 1, () => {
-          this.setState(() => ({ dragDisabled: false }))
-          this.props.moveDraggingCardsToFreeCell(targetDropFreeCellIndex)
-        })
+        this.animateCardsToPos(
+          draggingCards,
+          targetPosX + 1,
+          targetPosY + 1,
+          () => {
+            this.setState(() => ({ dragDisabled: false }))
+            this.props.moveDraggingCardsToFreeCell(targetDropFreeCellIndex)
+          }
+        )
+
+        return
+      }
+    }
+
+    /* check for solved deck */
+    if (this.props.draggingCards.length === 1) {
+      const solvedTopCards = this.getDroppableSolvedTopCards()
+      targetDropCell = solvedTopCards.find(card => {
+        const rect = card.getClientRect()
+        return (
+          Freecell.isSolvable(card.name(), this.props.draggingCards[0].id) &&
+          isPosInsideRect(
+            pointerClientX,
+            pointerClientY,
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height
+          )
+        )
+      })
+
+      if (targetDropCell) {
+        const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
+        const [category, number] = Freecell.getCardCategoryAndNumber(targetDropCell.name())
+
+        this.animateCardsToPos(
+          draggingCards,
+          targetPosX + (number > 0 ? CARD_SHADOW_BLUR : 1),
+          targetPosY + (number > 0 ? CARD_SHADOW_BLUR : 1),
+          () => {
+            this.setState(() => ({ dragDisabled: false }))
+            this.props.moveDraggingCardsToSolvedDeck(category)
+          }
+        )
 
         return
       }
@@ -153,7 +197,7 @@ class FreeCellCanvas extends React.PureComponent {
 
     /* bounce back card to dragging start position */
     const { deckIndex, cardIndex, freeIndex } = this.props.prevDraggingCardsPos
-    
+
     if (freeIndex >= 0) {
       const targetDropCell = this.stageNode.findOne(`.freecell-${freeIndex}`)
       const targetDropPos = targetDropCell.getClientRect()
@@ -238,7 +282,12 @@ class FreeCellCanvas extends React.PureComponent {
                   pos3Card={gameState.free.pos3Card}
                   onDragStart={this.handleFreeDeckDragStart}
                 />
-                <SolvedDeck />
+                <SolvedDeck
+                  spadeSolvedCards={gameState.solved.spadeSolvedCards}
+                  heartSolvedCards={gameState.solved.heartSolvedCards}
+                  diamondSolvedCards={gameState.solved.diamondSolvedCards}
+                  clubSolvedCards={gameState.solved.clubSolvedCards}
+                />
 
                 <PuzzleBoard
                   deckOfCards={gameState.puzzle}

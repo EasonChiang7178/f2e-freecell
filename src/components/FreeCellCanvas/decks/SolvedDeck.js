@@ -32,7 +32,7 @@ class SolvedDeck extends React.PureComponent {
     return (
       <Group x={(100 + 16) * i} y={0}>
         <EmptyWaterMarkCell category={category} />
-        {topCard && <Card key={topCard.id} imageData={topCard.imageData} />}
+        {topCard && <Card key={topCard.id} id={topCard.id} />}
       </Group>
     )
   }

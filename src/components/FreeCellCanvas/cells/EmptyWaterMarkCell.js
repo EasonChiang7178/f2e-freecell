@@ -24,7 +24,7 @@ class EmptyWaterMarkCell extends React.PureComponent {
     const { base64, width, height, src, srcSet } = this.props.waterMarkData.childImageSharp.fixed
 
     return (
-      <Group x={this.props.x} y={this.props.y}>
+      <Group x={this.props.x} y={this.props.y} name={`${this.props.category}_0`}>
         <EmptyCell />
         <Image
           name={this.props.category}
