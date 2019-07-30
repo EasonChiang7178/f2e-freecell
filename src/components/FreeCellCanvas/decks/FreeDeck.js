@@ -19,7 +19,7 @@ class FreeDeck extends React.PureComponent {
     return (
       <Group x={(100 + 16) * i} y={0}>
         <EmptyCell />
-        {card && <Card key={card.id} imageData={card.imageData} />}
+        {card && <Card key={card.id} imageData={card.imageData} draggable={true} />}
       </Group>
     )
   }

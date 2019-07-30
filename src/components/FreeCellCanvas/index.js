@@ -96,6 +96,40 @@ class FreeCellCanvas extends React.PureComponent {
 
   handleDraggingLayerDragEnd = (e) => {
     this.setState(() => ({ dragDisabled: true }))
+    const draggingCards = e.target
+    const pointerClientX = e.evt.clientX
+    const pointerClientY = e.evt.clientY
+
+    const isPosInsideRect = (x, y, rectX, rectY, rectW, rectH) => (
+      rectX <= x  && x <= (rectX + rectW) &&
+      rectY <= y && y <= (rectY + rectH)
+    )
+
+    let targetDropCell = null
+
+    /* check for free cells */
+    const freeCells = this.getDroppableFreeCells()
+    targetDropCell = freeCells.find(cell => {
+      const rect = cell.getClientRect()
+      return isPosInsideRect(
+        pointerClientX, pointerClientY,
+        rect.x, rect.y, rect.width, rect.height
+      )
+    })
+    
+    if (targetDropCell) {
+      const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
+      this.animateCardsToPos(
+        draggingCards,
+        targetPosX, targetPosY,
+        () => {
+          this.setState(() => ({ dragDisabled: false }))
+          // TODO
+        }
+      )
+
+      return
+    }
 
     const { deckIndex, cardIndex } = this.props.prevDraggingCardsPos
     const endPosCardId = this.props.gameState[deckIndex][cardIndex - 1]
@@ -103,31 +137,43 @@ class FreeCellCanvas extends React.PureComponent {
     const targetDropCard = this.stageNode.findOne(`.${endPosCardId.id}`)
     const targetDropPos = targetDropCard.getClientRect()
 
-    e.target.to({
-      x: targetDropPos.x + CARD_SHADOW_BLUR,
-      y: targetDropPos.y + STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR,
+    this.animateCardsToPos(
+      e.target,
+      targetDropPos.x + CARD_SHADOW_BLUR,
+      targetDropPos.y + STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR,
+      () => {
+        this.setState(() => ({ dragDisabled: false }))
+        this.props.moveDraggingCardsToPuzzle()
+      }
+    )
+  }
+
+  animateCardsToPos(cards, x, y, callback) {
+    cards.to({
+      x: x,
+      y: y,
       duration: 0.15,
       easing: Konva.Easings.EaseOut,
       onFinish: () => {
-        e.target.getChildren().each(child => {
+        cards.getChildren().each(child => {
           child.to({
             duration: 0.45,
             easing: Konva.Easings.ElasticEaseOut,
-            shadowOffsetX: 0, shadowOffsetY: 2,
-            shadowBlur: CARD_SHADOW_BLUR, shadowOpacity: .3
+            shadowOffsetX: 0,
+            shadowOffsetY: 2,
+            shadowBlur: CARD_SHADOW_BLUR,
+            shadowOpacity: 0.3,
           })
         })
 
-        e.target.to({
+        cards.to({
           duration: 0.45,
           easing: Konva.Easings.ElasticEaseOut,
-          scaleX: 1, scaleY: 1,
-          onFinish: () => {
-            this.setState(() => ({ dragDisabled: false }))
-            this.props.moveDraggingCardsToPuzzle()
-          }
+          scaleX: 1,
+          scaleY: 1,
+          onFinish: callback,
         })
-      }
+      },
     })
   }
 
