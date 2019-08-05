@@ -213,14 +213,18 @@ class FreeCellCanvas extends React.PureComponent {
       )
     } else {
       const endPosCardId = this.props.gameState.puzzle[deckIndex][cardIndex - 1]
-
-      const targetDropCard = this.stageNode.findOne(`.${endPosCardId.id}`)
+      const targetDropCard = endPosCardId
+        ? this.stageNode.findOne(`.${endPosCardId.id}`)
+        : this.stageNode.findOne(`.empty-cell`)
+      
       const targetDropPos = targetDropCard.getClientRect()
+      const dropPosOffsetX = endPosCardId ? CARD_SHADOW_BLUR : 0
+      const dropPosOffsetY = endPosCardId ? STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR : 0
 
       this.animateCardsToPos(
         e.target,
-        targetDropPos.x + CARD_SHADOW_BLUR,
-        targetDropPos.y + STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR,
+        targetDropPos.x + dropPosOffsetX,
+        targetDropPos.y + dropPosOffsetY,
         () => {
           this.setState(() => ({ dragDisabled: false }))
           this.props.moveDraggingCardsToPuzzle()
