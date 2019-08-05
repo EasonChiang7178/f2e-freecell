@@ -13,6 +13,26 @@ class Freecell {
     return true
   }
 
+  static isStackable(leafCardId, emptyDeckNum, emptyFreeCellNum, droppedCardId, droppedCardsNum) {
+    const afterEmptyDeckNum = leafCardId === "empty-cell" ? emptyDeckNum - 1 : emptyDeckNum
+    const enabledDraggingCardNum = 1 + emptyFreeCellNum + afterEmptyDeckNum * 2
+    if (droppedCardsNum > enabledDraggingCardNum) {
+      return false
+    }
+
+    if (leafCardId === "empty-cell") {
+      return true
+    }
+
+    const [leafCardColor, leafCardNumber] = this.getCardColorAndNumber(leafCardId)
+    const [droppedCardColor, droppedCardNumber] = this.getCardColorAndNumber(droppedCardId)
+
+    return (
+      (leafCardColor !== droppedCardColor) &&
+      (leafCardNumber === droppedCardNumber + 1)
+    )
+  }
+
   static isCardInStackDraggable(cards, cardInIndex) {
     if (cards.length === 0) {
       return false

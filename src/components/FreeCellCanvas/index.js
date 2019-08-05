@@ -195,6 +195,51 @@ class FreeCellCanvas extends React.PureComponent {
       }
     }
 
+    /* check for puzzle stacked decks */
+    const puzzleLeafCards = this.getDroppablePuzzleLeafCards()
+    const emptyDecksNum = puzzleLeafCards.reduce((totalNum, card) => card.name() === "empty-cell" ? totalNum + 1 : totalNum, 0)
+    const emptyFreeCellNum = this.getDroppableFreeCells().length
+
+    targetDropCell = puzzleLeafCards.find(cell => {
+      const rect = cell.getClientRect()
+      return (
+        Freecell.isStackable(
+          cell.name(), emptyDecksNum,
+          emptyFreeCellNum,
+          this.props.draggingCards[0].id, this.props.draggingCards.length
+        ) &&
+        isPosInsideRect(
+          pointerClientX,
+          pointerClientY,
+          rect.x,
+          rect.y,
+          rect.width,
+          rect.height
+        )
+      )
+    })
+
+    
+    if (targetDropCell) {
+      const targetDropPuzzleDeckIndex = puzzleLeafCards.findIndex(card => card.name() === targetDropCell.name())
+
+      const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
+      const dropPosOffsetX = targetDropCell.name() !== "empty-cell" ? CARD_SHADOW_BLUR : 0
+      const dropPosOffsetY = targetDropCell.name() !== "empty-cell" ? STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR : 0
+
+      this.animateCardsToPos(
+        draggingCards,
+        targetPosX + dropPosOffsetX,
+        targetPosY + dropPosOffsetY,
+        () => {
+          this.setState(() => ({ dragDisabled: false }))
+          this.props.moveDraggingCardsToPuzzle(targetDropPuzzleDeckIndex)
+        }
+      )
+
+      return
+    }
+
     /* bounce back card to dragging start position */
     const { deckIndex, cardIndex, freeIndex } = this.props.prevDraggingCardsPos
 

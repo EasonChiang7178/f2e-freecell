@@ -68,8 +68,10 @@ class FreeCellBoard extends React.PureComponent {
 
   moveDraggingCardsToPuzzle = (deckIndex) => {
     const { gameState, draggingCards, prevDraggingCardsPos } = this.state
-    const targetDeckIndex = deckIndex || prevDraggingCardsPos.deckIndex
-
+    const targetDeckIndex = typeof deckIndex !== "undefined"
+      ? deckIndex
+      : prevDraggingCardsPos.deckIndex
+    
     const updatedDeckCards = gameState.puzzle[targetDeckIndex].concat(draggingCards)
 
     this.setState(state => ({
