@@ -119,88 +119,103 @@ class FreeCellCanvas extends React.PureComponent {
     const pointerClientX = e.evt.clientX
     const pointerClientY = e.evt.clientY
 
-    const isPosInsideRect = (x, y, rectX, rectY, rectW, rectH) =>
-      rectX <= x && x <= rectX + rectW && rectY <= y && y <= rectY + rectH
+    if (this.checkFreeCellsAndDropCard(draggingCards, pointerClientX, pointerClientY)) {
+      return
+    }
 
-    let targetDropCell = null
+    if (this.checkSolvedDecksAndDropCard(draggingCards, pointerClientX, pointerClientY)) {
+      return
+    }
 
-    /* check for free cells */
-    if (this.props.draggingCards.length === 1) {
-      const freeCells = this.getDroppableFreeCells()
-      targetDropCell = freeCells.find(cell => {
-        const rect = cell.getClientRect()
-        return isPosInsideRect(
-          pointerClientX,
-          pointerClientY,
-          rect.x,
-          rect.y,
-          rect.width,
-          rect.height
-        )
-      })
+    if (this.checkPuzzleDecksAndDropCards(draggingCards, pointerClientX, pointerClientY)) {
+      return
+    }
 
+    this.bounceBackDraggingCards(draggingCards)
+  }
+
+  checkFreeCellsAndDropCard = (draggingCards, pointerClientX, pointerClientY) => {
+    if (this.props.draggingCards.length !== 1) {
+      return false
+    }
+
+    const freeCells = this.getDroppableFreeCells()
+    const targetDropCell = freeCells.find(cell => {
+      const rect = cell.getClientRect()
+      return this.isPosInsideRect(
+        pointerClientX, pointerClientY,
+        rect.x, rect.y, rect.width, rect.height
+      )
+    })
+
+    if (targetDropCell) {
       const targetDropFreeCellIndex = this.stageNode
-        .findOne(".free-deck").children
-        .findIndex(cell => cell === targetDropCell)
+        .findOne(".free-deck")
+        .children.findIndex(cell => cell === targetDropCell)
 
-      if (targetDropCell) {
-        const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
-        this.animateCardsToPos(
-          draggingCards,
-          targetPosX + 1,
-          targetPosY + 1,
-          () => {
-            this.setState(() => ({ dragDisabled: false }))
-            this.props.moveDraggingCardsToFreeCell(targetDropFreeCellIndex)
-          }
-        )
+      const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
+      this.animateCardsToPos(
+        draggingCards,
+        targetPosX + 1,
+        targetPosY + 1,
+        () => {
+          this.setState(() => ({ dragDisabled: false }))
+          this.props.moveDraggingCardsToFreeCell(targetDropFreeCellIndex)
+        }
+      )
 
-        return
-      }
+      return true
+    }
+    return false
+  }
+
+  checkSolvedDecksAndDropCard = (draggingCards, pointerClientX, pointerClientY) => {
+    if (this.props.draggingCards.length !== 1) {
+      return false
     }
 
-    /* check for solved deck */
-    if (this.props.draggingCards.length === 1) {
-      const solvedTopCards = this.getDroppableSolvedTopCards()
-      targetDropCell = solvedTopCards.find(card => {
-        const rect = card.getClientRect()
-        return (
-          Freecell.isSolvable(card.name(), this.props.draggingCards[0].id) &&
-          isPosInsideRect(
-            pointerClientX,
-            pointerClientY,
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height
-          )
+    const solvedTopCards = this.getDroppableSolvedTopCards()
+    const targetDropCell = solvedTopCards.find(card => {
+      const rect = card.getClientRect()
+      return (
+        Freecell.isSolvable(
+          card.name(),
+          this.props.draggingCards[0].id
+        ) &&
+        this.isPosInsideRect(
+          pointerClientX, pointerClientY,
+          rect.x, rect.y, rect.width, rect.height
         )
-      })
+      )
+    })
 
-      if (targetDropCell) {
-        const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
-        const [category, number] = Freecell.getCardCategoryAndNumber(targetDropCell.name())
+    if (targetDropCell) {
+      const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
+      const [category, number] = Freecell.getCardCategoryAndNumber(
+        targetDropCell.name()
+      )
 
-        this.animateCardsToPos(
-          draggingCards,
-          targetPosX + (number > 0 ? CARD_SHADOW_BLUR : 1),
-          targetPosY + (number > 0 ? CARD_SHADOW_BLUR : 1),
-          () => {
-            this.setState(() => ({ dragDisabled: false }))
-            this.props.moveDraggingCardsToSolvedDeck(category)
-          }
-        )
+      this.animateCardsToPos(
+        draggingCards,
+        targetPosX + (number > 0 ? CARD_SHADOW_BLUR : 1),
+        targetPosY + (number > 0 ? CARD_SHADOW_BLUR : 1),
+        () => {
+          this.setState(() => ({ dragDisabled: false }))
+          this.props.moveDraggingCardsToSolvedDeck(category)
+        }
+      )
 
-        return
-      }
+      return true
     }
+    return false
+  }
 
-    /* check for puzzle stacked decks */
+  checkPuzzleDecksAndDropCards = (draggingCards, pointerClientX, pointerClientY) => {
     const puzzleLeafCards = this.getDroppablePuzzleLeafCards()
     const emptyDecksNum = puzzleLeafCards.reduce((totalNum, card) => card.name() === "empty-cell" ? totalNum + 1 : totalNum, 0)
     const emptyFreeCellNum = this.getDroppableFreeCells().length
 
-    targetDropCell = puzzleLeafCards.find(cell => {
+    const targetDropCell = puzzleLeafCards.find(cell => {
       const rect = cell.getClientRect()
       return (
         Freecell.isStackable(
@@ -208,18 +223,13 @@ class FreeCellCanvas extends React.PureComponent {
           emptyFreeCellNum,
           this.props.draggingCards[0].id, this.props.draggingCards.length
         ) &&
-        isPosInsideRect(
-          pointerClientX,
-          pointerClientY,
-          rect.x,
-          rect.y,
-          rect.width,
-          rect.height
+        this.isPosInsideRect(
+          pointerClientX, pointerClientY,
+          rect.x, rect.y, rect.width, rect.height
         )
       )
     })
 
-    
     if (targetDropCell) {
       const targetDropPuzzleDeckIndex = puzzleLeafCards.findIndex(card => card.name() === targetDropCell.name())
 
@@ -237,46 +247,13 @@ class FreeCellCanvas extends React.PureComponent {
         }
       )
 
-      return
+      return true
     }
-
-    /* bounce back card to dragging start position */
-    const { deckIndex, cardIndex, freeIndex } = this.props.prevDraggingCardsPos
-
-    if (freeIndex >= 0) {
-      const targetDropCell = this.stageNode.findOne(`.freecell-${freeIndex}`)
-      const targetDropPos = targetDropCell.getClientRect()
-
-      this.animateCardsToPos(
-        e.target,
-        targetDropPos.x + 1,
-        targetDropPos.y + 1,
-        () => {
-          this.setState(() => ({ dragDisabled: false }))
-          this.props.moveDraggingCardsToFreeCell(freeIndex)
-        }
-      )
-    } else {
-      const endPosCardId = this.props.gameState.puzzle[deckIndex][cardIndex - 1]
-      const targetDropCard = endPosCardId
-        ? this.stageNode.findOne(`.${endPosCardId.id}`)
-        : this.stageNode.findOne(`.empty-cell`)
-      
-      const targetDropPos = targetDropCard.getClientRect()
-      const dropPosOffsetX = endPosCardId ? CARD_SHADOW_BLUR : 0
-      const dropPosOffsetY = endPosCardId ? STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR : 0
-
-      this.animateCardsToPos(
-        e.target,
-        targetDropPos.x + dropPosOffsetX,
-        targetDropPos.y + dropPosOffsetY,
-        () => {
-          this.setState(() => ({ dragDisabled: false }))
-          this.props.moveDraggingCardsToPuzzle()
-        }
-      )
-    }
+    return false
   }
+
+  isPosInsideRect = (x, y, rectX, rectY, rectW, rectH) =>
+    rectX <= x && x <= rectX + rectW && rectY <= y && y <= rectY + rectH
 
   animateCardsToPos(cards, x, y, callback) {
     cards.to({
@@ -305,6 +282,46 @@ class FreeCellCanvas extends React.PureComponent {
         })
       },
     })
+  }
+
+  bounceBackDraggingCards = (draggingCards) => {
+    const { deckIndex, cardIndex, freeIndex } = this.props.prevDraggingCardsPos
+
+    if (freeIndex >= 0) {
+      const targetDropCell = this.stageNode.findOne(`.freecell-${freeIndex}`)
+      const targetDropPos = targetDropCell.getClientRect()
+
+      this.animateCardsToPos(
+        draggingCards,
+        targetDropPos.x + 1,
+        targetDropPos.y + 1,
+        () => {
+          this.setState(() => ({ dragDisabled: false }))
+          this.props.moveDraggingCardsToFreeCell(freeIndex)
+        }
+      )
+    } else {
+      const endPosCardId = this.props.gameState.puzzle[deckIndex][cardIndex - 1]
+      const targetDropCard = endPosCardId
+        ? this.stageNode.findOne(`.${endPosCardId.id}`)
+        : this.stageNode.findOne(`.empty-cell`)
+
+      const targetDropPos = targetDropCard.getClientRect()
+      const dropPosOffsetX = endPosCardId ? CARD_SHADOW_BLUR : 0
+      const dropPosOffsetY = endPosCardId
+        ? STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR
+        : 0
+
+      this.animateCardsToPos(
+        draggingCards,
+        targetDropPos.x + dropPosOffsetX,
+        targetDropPos.y + dropPosOffsetY,
+        () => {
+          this.setState(() => ({ dragDisabled: false }))
+          this.props.moveDraggingCardsToPuzzle()
+        }
+      )
+    }
   }
 
   setStageRef = node => (this.stageNode = node)
