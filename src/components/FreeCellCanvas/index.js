@@ -303,6 +303,8 @@ class FreeCellCanvas extends React.PureComponent {
     rectX <= x && x <= rectX + rectW && rectY <= y && y <= rectY + rectH
 
   animateCardsToPos(cards, x, y, callback) {
+    let callbackCalled = false
+
     cards.to({
       x: x,
       y: y,
@@ -317,6 +319,12 @@ class FreeCellCanvas extends React.PureComponent {
             shadowOffsetY: 2,
             shadowBlur: CARD_SHADOW_BLUR,
             shadowOpacity: 0.3,
+            onFinish: () => {
+              if (callbackCalled === false) {
+                callback()
+                callbackCalled = true
+              }
+            },
           })
         })
 
@@ -325,7 +333,6 @@ class FreeCellCanvas extends React.PureComponent {
           easing: Konva.Easings.ElasticEaseOut,
           scaleX: 1,
           scaleY: 1,
-          onFinish: callback,
         })
       },
     })
