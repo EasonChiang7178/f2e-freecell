@@ -262,7 +262,7 @@ class FreeCellCanvas extends React.PureComponent {
     const emptyDecksNum = puzzleLeafCards.reduce((totalNum, card) => card.name() === "empty-cell" ? totalNum + 1 : totalNum, 0)
     const emptyFreeCellNum = this.getDroppableFreeCells().length
 
-    const targetDropCell = puzzleLeafCards.find(cell => {
+    const targetDropPuzzleDeckIndex = puzzleLeafCards.findIndex(cell => {
       const rect = cell.getClientRect()
       return (
         Freecell.isStackable(
@@ -276,10 +276,9 @@ class FreeCellCanvas extends React.PureComponent {
         )
       )
     })
+    const targetDropCell = puzzleLeafCards[targetDropPuzzleDeckIndex]
 
     if (targetDropCell) {
-      const targetDropPuzzleDeckIndex = puzzleLeafCards.findIndex(card => card.name() === targetDropCell.name())
-
       const { x: targetPosX, y: targetPosY } = targetDropCell.getClientRect()
       const dropPosOffsetX = targetDropCell.name() !== "empty-cell" ? CARD_SHADOW_BLUR : 0
       const dropPosOffsetY = targetDropCell.name() !== "empty-cell" ? STACKED_CARD_OFFSET_Y + CARD_SHADOW_BLUR : 0
