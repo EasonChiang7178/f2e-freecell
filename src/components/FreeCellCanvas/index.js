@@ -35,6 +35,10 @@ class FreeCellCanvas extends React.PureComponent {
     dragDisabled: false,
   }
 
+  componentDidMount = () => {
+    this.stageNode.on('dblclick dbltap', this.handleStageNodeDoubleClick)
+  }
+
   getCanvasWidth = () => 1440 // [TODO] Support SSR and responsive simultaneously
 
   getCanvasHeight = () => 821 // [TODO] Support SSR and responsive simultaneously
@@ -132,6 +136,45 @@ class FreeCellCanvas extends React.PureComponent {
     }
 
     this.bounceBackDraggingCards(draggingCards)
+  }
+
+  handleStageNodeDoubleClick = e => {
+    const clickedCard = e.target
+    const clickedCardId = clickedCard.name()
+    const puzzleLeafCards = this.getDroppablePuzzleLeafCards()
+    if (puzzleLeafCards.some(leafCard => leafCard.name() === clickedCardId) === false) {
+      return 
+    }
+    
+    const solvedTopCards = this.getDroppableSolvedTopCards()
+    const targetDropCell = solvedTopCards.find(card => (
+      Freecell.isSolvable(card.name(), clickedCardId)
+    ))
+
+    if (targetDropCell) {
+      const { x: droppedX, y: droppedY } = targetDropCell.getClientRect()
+      const { x: cardX, y: cardY } = clickedCard.getClientRect()
+      const targetPosX = droppedX - cardX
+      const targetPosY = droppedY - cardY
+
+      const [deckIndex, cardIndex] = Freecell.getCardPosInPuzzleDeck(
+        this.props.gameState.puzzle, clickedCardId
+      )
+      const { x, y } = e.target.getClientRect()
+
+      this.props.moveCardsToDrag(deckIndex, cardIndex, { x, y })
+
+      setTimeout(() => {
+        const [category, number] = Freecell.getCardCategoryAndNumber(targetDropCell.name())
+  
+        this.animateCardsToPos(
+          this.stageNode.find(`.${clickedCardId}`),
+          targetPosX + (number > 0 ? CARD_SHADOW_BLUR : 1),
+          targetPosY + (number > 0 ? CARD_SHADOW_BLUR : 1),
+          () => this.props.moveDraggingCardsToSolvedDeck(category)
+        )
+      }, 0)
+    }
   }
 
   checkFreeCellsAndDropCard = (draggingCards, pointerClientX, pointerClientY) => {
