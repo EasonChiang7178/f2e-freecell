@@ -162,6 +162,7 @@ class FreeCellCanvas extends React.PureComponent {
       )
       const { x, y } = e.target.getClientRect()
 
+      this.setState(() => ({ dragDisabled: true }))
       this.props.moveCardsToDrag(deckIndex, cardIndex, { x, y })
 
       setTimeout(() => {
@@ -171,7 +172,10 @@ class FreeCellCanvas extends React.PureComponent {
           this.stageNode.find(`.${clickedCardId}`),
           targetPosX + (number > 0 ? CARD_SHADOW_BLUR : 1),
           targetPosY + (number > 0 ? CARD_SHADOW_BLUR : 1),
-          () => this.props.moveDraggingCardsToSolvedDeck(category)
+          () => {
+            this.setState(() => ({ dragDisabled: false }))
+            this.props.moveDraggingCardsToSolvedDeck(category)
+          }
         )
       }, 0)
     }
@@ -412,6 +416,7 @@ class FreeCellCanvas extends React.PureComponent {
               >
                 <DraggingDeck
                   cards={draggingCards}
+                  dragDisabled={dragDisabled}
                   x={draggingStartPos.x}
                   y={draggingStartPos.y}
                 />

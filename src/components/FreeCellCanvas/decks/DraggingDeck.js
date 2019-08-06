@@ -6,17 +6,19 @@ class DraggingDeck extends React.PureComponent {
   static propTypes = {
     cards: PropTypes.array,
     x: PropTypes.number,
-    y: PropTypes.number
+    y: PropTypes.number,
+    dragDisabled: PropTypes.bool
   }
 
   static defaultProps = {
     cards: [],
     x: 0,
-    y: 0
+    y: 0,
+    dragDisabled: false
   }
 
   componentDidUpdate = (oldProps) => {
-    if (oldProps.cards.length === 0 && this.props.cards.length !== 0) {
+    if (oldProps.cards.length === 0 && this.props.cards.length !== 0 && this.props.dragDisabled === false) {
       this.draggingNode.startDrag()
     }
   }
