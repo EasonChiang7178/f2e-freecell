@@ -1,0 +1,12 @@
+{
+  "board": [
+    ["club_4", "diamond_j", "spade_6", "diamond_2", "heart_2", "spade_j", "diamond_a"],
+    ["heart_10", "heart_3", "heart_6", "spade_2", "diamond_4", "club_8", "spade_4"],
+    ["heart_4", "spade_7", "club_j", "diamond_7", "spade_a", "heart_9", "club_10"],
+    ["heart_a", "heart_5", "spade_9", "diamond_10", "diamond_3", "club_a", "club_3"],
+    ["spade_k", "diamond_9", "club_2", "diamond_k", "spade_3", "club_7"],
+    ["club_9", "diamond_5", "spade_8", "club_5", "diamond_6", "diamond_q"],
+    ["heart_q", "heart_j", "heart_7", "heart_8", "spade_q", "club_6"],
+    ["heart_k", "club_q", "spade_5", "club_k", "spade_10", "diamond_8"]
+  ]
+}
