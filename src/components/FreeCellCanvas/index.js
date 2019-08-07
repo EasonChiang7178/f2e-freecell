@@ -94,7 +94,7 @@ class FreeCellCanvas extends React.PureComponent {
 
     const freeCells = this.props.gameState.free
     const freeIndex = Object.keys(freeCells).findIndex(
-      key => (freeCells[key] && freeCells[key].id) === cardId
+      key => freeCells[key] === cardId
     )
 
     this.props.moveFreeCardToDrag(freeIndex, { x, y })
@@ -227,7 +227,7 @@ class FreeCellCanvas extends React.PureComponent {
       return (
         Freecell.isSolvable(
           card.name(),
-          this.props.draggingCards[0].id
+          this.props.draggingCards[0]
         ) &&
         this.isPosInsideRect(
           pointerClientX, pointerClientY,
@@ -268,7 +268,7 @@ class FreeCellCanvas extends React.PureComponent {
         Freecell.isStackable(
           cell.name(), emptyDecksNum,
           emptyFreeCellNum,
-          this.props.draggingCards[0].id, this.props.draggingCards.length
+          this.props.draggingCards[0], this.props.draggingCards.length
         ) &&
         this.isPosInsideRect(
           pointerClientX, pointerClientY,
@@ -356,7 +356,7 @@ class FreeCellCanvas extends React.PureComponent {
     } else {
       const endPosCardId = this.props.gameState.puzzle[deckIndex][cardIndex - 1]
       const targetDropCard = endPosCardId
-        ? this.stageNode.findOne(`.${endPosCardId.id}`)
+        ? this.stageNode.findOne(`.${endPosCardId}`)
         : this.stageNode.findOne(`.empty-cell`)
 
       const targetDropPos = targetDropCard.getClientRect()

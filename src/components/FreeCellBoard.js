@@ -5,14 +5,14 @@ class FreeCellBoard extends React.PureComponent {
   state = {
     gameState: {
       puzzle: [
-        [{ id: 'heart_k' }, { id: 'club_2' }, { id: 'diamond_10' }, { id: 'heart_3' }, { id: 'heart_6' }, { id: 'spade_a' }, { id: 'spade_10' }],
-        [{ id: 'diamond_2' }, { id: 'spade_7' }, { id: 'diamond_6' }, { id: 'spade_5' }, { id: 'club_10' }, { id: 'diamond_k' }, { id: 'heart_8' }],
-        [{ id: 'spade_9' }, { id: 'heart_4' }, { id: 'club_q' }, { id: 'spade_4' }, { id: 'club_7' }, { id: 'spade_2' }, { id: 'club_9' }],
-        [{ id: 'heart_a' }, { id: 'spade_8' }, { id: 'diamond_4' }, { id: 'heart_j' }, { id: 'heart_q' }, { id: 'diamond_9' }, { id: 'spade_q' }],
-        [{ id: 'club_8' }, { id: 'diamond_q' }, { id: 'heart_9' }, { id: 'club_k' }, { id: 'spade_k' }, { id: 'diamond_a' }],
-        [{ id: 'heart_10' }, { id: 'club_a' }, { id: 'diamond_7' }, { id: 'heart_2' }, { id: 'club_j' }, { id: 'spade_6' }],
-        [{ id: 'club_6' }, { id: 'diamond_3' }, { id: 'heart_5' }, { id: 'diamond_j' }, { id: 'diamond_5' }, { id: 'heart_7' }],
-        [{ id: 'spade_3' }, { id: 'diamond_8' }, { id: 'club_5' }, { id: 'club_3' }, { id: 'spade_j' }, { id: 'club_4' }],
+        ['heart_k', 'club_2', 'diamond_10', 'heart_3', 'heart_6', 'spade_a', 'spade_10'],
+        ['diamond_2', 'spade_7', 'diamond_6', 'spade_5', 'club_10', 'diamond_k', 'heart_8'],
+        ['spade_9', 'heart_4', 'club_q', 'spade_4', 'club_7', 'spade_2', 'club_9'],
+        ['heart_a', 'spade_8', 'diamond_4', 'heart_j', 'heart_q', 'diamond_9', 'spade_q'],
+        ['club_8', 'diamond_q', 'heart_9', 'club_k', 'spade_k', 'diamond_a'],
+        ['heart_10', 'club_a', 'diamond_7', 'heart_2', 'club_j', 'spade_6'],
+        ['club_6', 'diamond_3', 'heart_5', 'diamond_j', 'diamond_5', 'heart_7'],
+        ['spade_3', 'diamond_8', 'club_5', 'club_3', 'spade_j', 'club_4'],
       ],
       free: {
         pos0Card: null, pos1Card: null, pos2Card: null, pos3Card: null

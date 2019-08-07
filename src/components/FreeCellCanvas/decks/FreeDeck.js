@@ -7,20 +7,20 @@ import Card from "../cells/Card"
 
 class FreeDeck extends React.PureComponent {
   static propTypes = {
-    pos0Card: PropTypes.object,
-    pos1Card: PropTypes.object,
-    pos2Card: PropTypes.object,
-    pos3Card: PropTypes.object,
+    pos0Card: PropTypes.string,
+    pos1Card: PropTypes.string,
+    pos2Card: PropTypes.string,
+    pos3Card: PropTypes.string,
     onDragStart: PropTypes.func.isRequired
   }
 
   renderCell = (i) => {
-    const card = this.props[`pos${i}Card`]
+    const cardId = this.props[`pos${i}Card`]
     
     return (
       <Group x={(100 + 16) * i} y={0} name={`freecell-${i}`}>
         <EmptyCell />
-        {card && <Card key={card.id} id={card.id} draggable={true} />}
+        {cardId && <Card key={cardId} id={cardId} draggable={true} />}
       </Group>
     )
   }

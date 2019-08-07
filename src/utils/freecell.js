@@ -43,13 +43,13 @@ class Freecell {
       return true
     } 
     
-    return cards.slice(cardInIndex).every((card, i, self) => {
+    return cards.slice(cardInIndex).every((cardId, i, self) => {
       if (self.length === i + 1) {
         return true
       }
 
-      const [cardColor, cardNumber] = this.getCardColorAndNumber(card.id)
-      const [nextCardColor, nextCardNumber] = this.getCardColorAndNumber(self[i + 1].id)
+      const [cardColor, cardNumber] = this.getCardColorAndNumber(cardId)
+      const [nextCardColor, nextCardNumber] = this.getCardColorAndNumber(self[i + 1])
 
       return (
         (cardColor !== nextCardColor) &&
@@ -58,10 +58,10 @@ class Freecell {
     })
   }
 
-  static getCardPosInPuzzleDeck(cardsOfDecks, cardId) {
-    for (let i = 0; i < cardsOfDecks.length; i++) {
-      for (let j = 0; j < cardsOfDecks[i].length; j++) {
-        if (cardsOfDecks[i][j].id === cardId) {
+  static getCardPosInPuzzleDeck(cardIdsOfDecks, cardId) {
+    for (let i = 0; i < cardIdsOfDecks.length; i++) {
+      for (let j = 0; j < cardIdsOfDecks[i].length; j++) {
+        if (cardIdsOfDecks[i][j] === cardId) {
           return [i, j]
         }
       }

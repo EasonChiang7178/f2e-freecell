@@ -32,8 +32,8 @@ class StackedDeck extends React.PureComponent {
   renderCards = () => {
     const { cards } = this.props
     
-    return cards.length > 0 ? cards.map((card, i) => (
-      <Card id={card.id} key={card.id} x={0} y={STACKED_CARD_OFFSET_Y * i} draggable={this.isCardDraggable(i)} />
+    return cards.length > 0 ? cards.map((cardId, i) => (
+      <Card id={cardId} key={cardId} x={0} y={STACKED_CARD_OFFSET_Y * i} draggable={this.isCardDraggable(i)} />
     )) : (
       <Rect name="empty-cell" width={100} height={150} cornerRadius={5} fill="transparent" stroke="transparent" strokeWidth={0} />
     )

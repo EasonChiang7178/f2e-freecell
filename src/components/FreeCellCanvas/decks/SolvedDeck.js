@@ -27,12 +27,12 @@ class SolvedDeck extends React.PureComponent {
 
   renderDeck = (i, category) => {
     const solvedCards = this.props[`${category}SolvedCards`]
-    const topCard = solvedCards.length > 0 ? solvedCards[solvedCards.length - 1] : null
+    const topCardId = solvedCards.length > 0 ? solvedCards[solvedCards.length - 1] : null
     
     return (
       <Group x={(100 + 16) * i} y={0}>
         <EmptyWaterMarkCell category={category} />
-        {topCard && <Card key={topCard.id} id={topCard.id} />}
+        {topCardId && <Card key={topCardId} id={topCardId} />}
       </Group>
     )
   }
