@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 
 import { Container } from "./FreeCellBoard.css"
 import FreeCellCanvas from "./FreeCellCanvas"
+import GameControls from "./GameControls"
 import LoadingOverlay from "./LoadingOverlay"
 
 class FreeCellBoard extends React.PureComponent {
@@ -34,6 +35,54 @@ class FreeCellBoard extends React.PureComponent {
       prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 },
       isLoadingStopped: false
     }
+  }
+
+  handleNewGameClick = () => {
+    let newBoardIndex = this.state.curBoardIndex
+    do {
+      newBoardIndex = this.getRandomBoardDataIndex()
+    } while (newBoardIndex === this.state.curBoardIndex)
+
+    this.setState(() => ({ isLoadingStopped: false }))
+
+    setTimeout(() => {
+      this.setState(() => ({
+        gameState: {
+          puzzle: this.props.boardData[newBoardIndex],
+          free: {
+            pos0Card: null, pos1Card: null, pos2Card: null, pos3Card: null
+          },
+          solved: {
+            spadeSolvedCards: [],
+            heartSolvedCards: [],
+            diamondSolvedCards: [],
+            clubSolvedCards: []
+          }
+        },
+        curBoardIndex: newBoardIndex
+      }))
+    }, 150)
+  }
+
+  handleGameRestartClick = () => {
+    this.setState(() => ({ isLoadingStopped: false }))
+
+    setTimeout(() => {
+      this.setState(state => ({
+        gameState: {
+          puzzle: this.props.boardData[state.curBoardIndex],
+          free: {
+            pos0Card: null, pos1Card: null, pos2Card: null, pos3Card: null
+          },
+          solved: {
+            spadeSolvedCards: [],
+            heartSolvedCards: [],
+            diamondSolvedCards: [],
+            clubSolvedCards: []
+          }
+        }
+      })
+    )}, 150)
   }
 
   handleLoadingCompleted = () => this.setState(() => ({ isLoadingStopped: true }))
@@ -158,6 +207,10 @@ class FreeCellBoard extends React.PureComponent {
           moveDraggingCardsToPuzzle={this.moveDraggingCardsToPuzzle}
           moveDraggingCardsToFreeCell={this.moveDraggingCardsToFreeCell}
           moveDraggingCardsToSolvedDeck={this.moveDraggingCardsToSolvedDeck}
+        />
+        <GameControls
+          onNewGameClick={this.handleNewGameClick}
+          onGameRestartClick={this.handleGameRestartClick}
         />
         <LoadingOverlay isStopped={isLoadingStopped} onCompleted={this.handleLoadingCompleted} />
       </Container>
