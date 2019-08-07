@@ -1,7 +1,15 @@
-/**
- * Implement Gatsby's SSR (Server Side Rendering) APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/ssr-apis/
- */
+import { renderToString } from "react-dom/server"
+import { ServerStyleSheet } from "styled-components"
 
-// You can delete this file if you're not using it
+export const replaceRenderer = ({
+  bodyComponent,
+  replaceBodyHTMLString,
+  setHeadComponents,
+}) => {
+  const sheet = new ServerStyleSheet()
+  const bodyHTML = renderToString(sheet.collectStyles(bodyComponent))
+  replaceBodyHTMLString(bodyHTML)
+
+  const styleElement = sheet.getStyleElement()
+  setHeadComponents(styleElement)
+}
