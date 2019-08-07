@@ -1,34 +1,37 @@
 import React from "react"
+import PropTypes from "prop-types"
 import FreeCellCanvas from "./FreeCellCanvas"
 
 class FreeCellBoard extends React.PureComponent {
-  state = {
-    gameState: {
-      puzzle: [
-        ['heart_k', 'club_2', 'diamond_10', 'heart_3', 'heart_6', 'spade_a', 'spade_10'],
-        ['diamond_2', 'spade_7', 'diamond_6', 'spade_5', 'club_10', 'diamond_k', 'heart_8'],
-        ['spade_9', 'heart_4', 'club_q', 'spade_4', 'club_7', 'spade_2', 'club_9'],
-        ['heart_a', 'spade_8', 'diamond_4', 'heart_j', 'heart_q', 'diamond_9', 'spade_q'],
-        ['club_8', 'diamond_q', 'heart_9', 'club_k', 'spade_k', 'diamond_a'],
-        ['heart_10', 'club_a', 'diamond_7', 'heart_2', 'club_j', 'spade_6'],
-        ['club_6', 'diamond_3', 'heart_5', 'diamond_j', 'diamond_5', 'heart_7'],
-        ['spade_3', 'diamond_8', 'club_5', 'club_3', 'spade_j', 'club_4'],
-      ],
-      free: {
-        pos0Card: null, pos1Card: null, pos2Card: null, pos3Card: null
-      },
-      solved: {
-        spadeSolvedCards: [],
-        heartSolvedCards: [],
-        diamondSolvedCards: [],
-        clubSolvedCards: []
-      }
-    },
-    history: [],
-    draggingStartPos: { x: 0, y: 0 },
-    draggingCards: [],
-    prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 }
+  static propTypes = {
+    boardData: PropTypes.array.isRequired
   }
+
+  constructor(props) {
+    super(props)
+
+    const boardIndex = this.getRandomBoardDataIndex()
+    this.state = {
+      gameState: {
+        puzzle: props.boardData[boardIndex],
+        free: {
+          pos0Card: null, pos1Card: null, pos2Card: null, pos3Card: null
+        },
+        solved: {
+          spadeSolvedCards: [],
+          heartSolvedCards: [],
+          diamondSolvedCards: [],
+          clubSolvedCards: []
+        }
+      },
+      curBoardIndex: boardIndex,
+      history: [],
+      draggingStartPos: { x: 0, y: 0 },
+      draggingCards: [],
+      prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 }
+    }
+  }
+
 
   moveCardsToDrag = (deckIndex, cardIndex, startPos) => {
     const { gameState } = this.state
@@ -128,6 +131,11 @@ class FreeCellBoard extends React.PureComponent {
       draggingStartPos: { x: 0, y: 0 },
       prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 },
     })), 0)
+  }
+
+  getRandomBoardDataIndex = () => {
+    const { boardData } = this.props
+    return Math.floor((Math.random() * 10) % boardData.length)
   }
 
   render = () => {
