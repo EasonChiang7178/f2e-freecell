@@ -33,6 +33,7 @@ class FreeCellCanvas extends React.PureComponent {
 
   state = {
     dragDisabled: false,
+    doubleClickDisabled: false
   }
 
   componentDidMount = () => {
@@ -139,6 +140,10 @@ class FreeCellCanvas extends React.PureComponent {
   }
 
   handleStageNodeDoubleClick = e => {
+    if (this.state.doubleClickDisabled) {
+      return
+    }
+
     const clickedCard = e.target
     const clickedCardId = clickedCard.name()
     const puzzleLeafCards = this.getDroppablePuzzleLeafCards()
@@ -162,7 +167,7 @@ class FreeCellCanvas extends React.PureComponent {
       )
       const { x, y } = e.target.getClientRect()
 
-      this.setState(() => ({ dragDisabled: true }))
+      this.setState(() => ({ dragDisabled: true, doubleClickDisabled: true }))
       this.props.moveCardsToDrag(deckIndex, cardIndex, { x, y })
 
       setTimeout(() => {
@@ -173,7 +178,7 @@ class FreeCellCanvas extends React.PureComponent {
           targetPosX + (number > 0 ? CARD_SHADOW_BLUR : 1),
           targetPosY + (number > 0 ? CARD_SHADOW_BLUR : 1),
           () => {
-            this.setState(() => ({ dragDisabled: false }))
+            this.setState(() => ({ dragDisabled: false, doubleClickDisabled: false }))
             this.props.moveDraggingCardsToSolvedDeck(category)
           }
         )
