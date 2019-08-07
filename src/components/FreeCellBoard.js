@@ -1,6 +1,9 @@
 import React from "react"
 import PropTypes from "prop-types"
+
+import { Container } from "./FreeCellBoard.css"
 import FreeCellCanvas from "./FreeCellCanvas"
+import LoadingOverlay from "./LoadingOverlay"
 
 class FreeCellBoard extends React.PureComponent {
   static propTypes = {
@@ -28,10 +31,12 @@ class FreeCellBoard extends React.PureComponent {
       history: [],
       draggingStartPos: { x: 0, y: 0 },
       draggingCards: [],
-      prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 }
+      prevDraggingCardsPos: { deckIndex: -1, cardIndex: -1, freeIndex: -1 },
+      isLoadingStopped: false
     }
   }
 
+  handleLoadingCompleted = () => this.setState(() => ({ isLoadingStopped: true }))
 
   moveCardsToDrag = (deckIndex, cardIndex, startPos) => {
     const { gameState } = this.state
@@ -139,20 +144,23 @@ class FreeCellBoard extends React.PureComponent {
   }
 
   render = () => {
-    const { gameState, draggingStartPos, draggingCards, prevDraggingCardsPos } = this.state
+    const { gameState, draggingStartPos, draggingCards, prevDraggingCardsPos, isLoadingStopped } = this.state
     
     return (
-      <FreeCellCanvas
-        gameState={gameState}
-        draggingStartPos={draggingStartPos}
-        draggingCards={draggingCards}
-        prevDraggingCardsPos={prevDraggingCardsPos}
-        moveCardsToDrag={this.moveCardsToDrag}
-        moveFreeCardToDrag={this.moveFreeCardToDrag}
-        moveDraggingCardsToPuzzle={this.moveDraggingCardsToPuzzle}
-        moveDraggingCardsToFreeCell={this.moveDraggingCardsToFreeCell}
-        moveDraggingCardsToSolvedDeck={this.moveDraggingCardsToSolvedDeck}
-      />
+      <Container>
+        <FreeCellCanvas
+          gameState={gameState}
+          draggingStartPos={draggingStartPos}
+          draggingCards={draggingCards}
+          prevDraggingCardsPos={prevDraggingCardsPos}
+          moveCardsToDrag={this.moveCardsToDrag}
+          moveFreeCardToDrag={this.moveFreeCardToDrag}
+          moveDraggingCardsToPuzzle={this.moveDraggingCardsToPuzzle}
+          moveDraggingCardsToFreeCell={this.moveDraggingCardsToFreeCell}
+          moveDraggingCardsToSolvedDeck={this.moveDraggingCardsToSolvedDeck}
+        />
+        <LoadingOverlay isStopped={isLoadingStopped} onCompleted={this.handleLoadingCompleted} />
+      </Container>
     )
   }
 }
